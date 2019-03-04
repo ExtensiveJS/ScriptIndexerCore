@@ -36,5 +36,10 @@ namespace ScriptIndexerCore.Controllers
         {
             return "OK";
         }
+
+        public String Search()
+        {
+            return "OK";
+        }
     }
 }
