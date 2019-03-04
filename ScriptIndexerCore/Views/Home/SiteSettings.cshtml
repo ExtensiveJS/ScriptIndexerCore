@@ -23,22 +23,21 @@
 
 <script>
     $(function () {
-        alert('test 1');
     });
     function runSave() {
         alert('test');
-        //$.ajax({
-        //    url: '/api/test/',
-        //    type: 'POST',
-        //    data: {
-        //    },
-        //    success: function (data) {
-        //        alert('success');
-        //        //location.reload(true);
-        //    },
-        //    fail: function (xhr, textStatus, errorThrown) {
-        //        alert('request failed');
-        //    }
-        //});
+        $.ajax({
+            url: '/Home/RunTest/',
+            type: 'GET',
+            data: {
+            },
+            success: function (data) {
+                alert('success');
+                //location.reload(true);
+            },
+            fail: function (xhr, textStatus, errorThrown) {
+                alert('request failed');
+            }
+        });
     };
 </script>
