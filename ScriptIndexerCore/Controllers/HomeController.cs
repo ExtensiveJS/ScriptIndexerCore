@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml;
 using Microsoft.AspNetCore.Mvc;
 using ScriptIndexerCore.Models;
 
@@ -17,7 +18,14 @@ namespace ScriptIndexerCore.Controllers
 
         public IActionResult SiteSettings()
         {
-            return View();
+            XmlDocument doc = new XmlDocument();
+            doc.Load("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
+            HomeModel model = new HomeModel
+            {
+                Mongodb_path = doc.DocumentElement.SelectSingleNode("/settings/mongodb_path")?.InnerText,
+                Mongodb_port = doc.DocumentElement.SelectSingleNode("/settings/mongodb_port")?.InnerText
+            };
+            return View(model);
         }
 
 
@@ -40,6 +48,19 @@ namespace ScriptIndexerCore.Controllers
         public String Search()
         {
             return "OK";
+        }
+
+        public string SaveSettings(string mongoPath, string mongoPort)
+        {
+            String Ret = "OK";
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
+            doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText = mongoPath;
+            doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText = mongoPort;
+            doc.Save("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
+
+            return Ret;
         }
     }
 }
