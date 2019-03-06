@@ -45,7 +45,13 @@
             <p>&copy; 2019 - ScriptIndexerCore</p>
         </footer>
     </div>
-
+    <span id="spanWaiting" style="position:absolute;top:50%;left:45%;z-index: 99 !important;"><img style="width:100px;" src="/images/spinner.gif"></span>
+    <script>
+        $(function () {
+            $("#spanWaiting").hide();
+        });
+    </script>
     @RenderSection("Scripts", required: false)
+    
 </body>
 </html>

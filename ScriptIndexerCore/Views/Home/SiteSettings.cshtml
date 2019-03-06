@@ -12,13 +12,23 @@
     </div>
     <div style="height:35px;">
         <div style="width:150px;float:left;text-align:right;padding-right:5px;margin-top:7px;">MongoDB Port:</div>
-        <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtMongoPort" style="width:75px;" value="@Model.Mongodb_port"/></div>
+        <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtMongoPort" style="width:75px;" value="@Model.Mongodb_port" /></div>
+    </div>
+    <div style="height:35px;">
+        <div style="width:150px;float:left;text-align:right;padding-right:5px;margin-top:7px;">Database Name:</div>
+        <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtDatabaseName" value="@Model.Database_name" /></div>
+    </div>
+    <div style="height:35px;">
+        <div style="width:150px;float:left;text-align:right;padding-right:5px;margin-top:7px;">Collection Name:</div>
+        <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtCollectionName" value="@Model.Collection_name" /></div>
     </div>
     <div style="height:35px;">
         <div style="float:right;">
             <button type="button" class="btn btn-primary btn-sm" onclick="runSave();">Save</button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="runTest();">Test Connection</button>
         </div>
     </div>
+
 </div>
 
 <script>
@@ -30,10 +40,12 @@
             type: 'POST',
             data: {
                 mongoPath: $("#txtMongoPath").val(),
-                mongoPort: $("#txtMongoPort").val()
+                mongoPort: $("#txtMongoPort").val(),
+                databaseName: $("#txtDatabaseName").val(),
+                collectionName: $("#txtCollectionName").val()
             },
             success: function (data) {
-                alert('success');
+                alert('Settings Saved');
                 location.reload(true);
             },
             fail: function (xhr, textStatus, errorThrown) {
@@ -41,4 +53,29 @@
             }
         });
     };
+    function runTest() {
+        $("#spanWaiting").show();
+        $.ajax({
+            url: '/Home/TestMongo/',
+            type: 'GET',
+            data: {
+            },
+            success: function (data) {
+                $("#spanWaiting").hide();
+                alert('Connection Successful');
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                if (xhr.status == 404) {
+                    alert("Connection Failed 404");
+                } else {
+                    alert("Connection Failed");
+                }
+                $("#spanWaiting").hide();
+            },
+            fail: function (xhr, textStatus, errorThrown) {
+                $("#spanWaiting").hide();
+                alert('request failed');
+            }
+        });
+    }
 </script>

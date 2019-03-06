@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <settings>
-  <mongodb_path>//another/tes/1234/path</mongodb_path>
-  <mongodb_port>44444</mongodb_port>
+  <mongodb_path>localhost</mongodb_path>
+  <mongodb_port>27017</mongodb_port>
+  <database_name>ScriptIndexer</database_name>
+  <collection_name>ScriptIndexerCollection</collection_name>
 </settings>
