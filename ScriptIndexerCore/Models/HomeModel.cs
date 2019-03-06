@@ -10,6 +10,9 @@ namespace ScriptIndexerCore.Models
         public string Mongodb_path { get; set; }
         public string Mongodb_port { get; set; }
         public string Database_name { get; set; }
-        public string Collection_name { get; set; }
+        public string Movie_collection_name { get; set; }
+        public string Show_collection_name { get; set; }
+        public string Misc_collection_name { get; set; }
+
     }
 }

@@ -7,20 +7,28 @@
 <div style="border:1px solid black;border-radius:5px;padding:5px;">
     <div style="padding-bottom:5px;"><h3>Mongo Settings</h3></div>
     <div style="height:35px;">
-        <div style="width:150px;float:left;text-align:right;padding-right:5px;margin-top:7px;">MongoDB Path:</div>
+        <div style="width:175px;float:left;text-align:right;padding-right:5px;margin-top:7px;">MongoDB Path:</div>
         <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtMongoPath" value="@Model.Mongodb_path" /></div>
     </div>
     <div style="height:35px;">
-        <div style="width:150px;float:left;text-align:right;padding-right:5px;margin-top:7px;">MongoDB Port:</div>
+        <div style="width:175px;float:left;text-align:right;padding-right:5px;margin-top:7px;">MongoDB Port:</div>
         <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtMongoPort" style="width:75px;" value="@Model.Mongodb_port" /></div>
     </div>
     <div style="height:35px;">
-        <div style="width:150px;float:left;text-align:right;padding-right:5px;margin-top:7px;">Database Name:</div>
+        <div style="width:175px;float:left;text-align:right;padding-right:5px;margin-top:7px;">Database Name:</div>
         <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtDatabaseName" value="@Model.Database_name" /></div>
     </div>
     <div style="height:35px;">
-        <div style="width:150px;float:left;text-align:right;padding-right:5px;margin-top:7px;">Collection Name:</div>
-        <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtCollectionName" value="@Model.Collection_name" /></div>
+        <div style="width:175px;float:left;text-align:right;padding-right:5px;margin-top:7px;">Movie Collection Name:</div>
+        <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtMovieCollectionName" value="@Model.Movie_collection_name" /></div>
+    </div>
+    <div style="height:35px;">
+        <div style="width:175px;float:left;text-align:right;padding-right:5px;margin-top:7px;">Show Collection Name:</div>
+        <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtShowCollectionName" value="@Model.Show_collection_name" /></div>
+    </div>
+    <div style="height:35px;">
+        <div style="width:175px;float:left;text-align:right;padding-right:5px;margin-top:7px;">Misc Collection Name:</div>
+        <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtMiscCollectionName" value="@Model.Misc_collection_name" /></div>
     </div>
     <div style="height:35px;">
         <div style="float:right;">
@@ -42,7 +50,9 @@
                 mongoPath: $("#txtMongoPath").val(),
                 mongoPort: $("#txtMongoPort").val(),
                 databaseName: $("#txtDatabaseName").val(),
-                collectionName: $("#txtCollectionName").val()
+                movieCollectionName: $("#txtMovieCollectionName").val(),
+                showCollectionName: $("#txtShowCollectionName").val(),
+                miscCollectionName: $("#txtMiscCollectionName").val()
             },
             success: function (data) {
                 alert('Settings Saved');
