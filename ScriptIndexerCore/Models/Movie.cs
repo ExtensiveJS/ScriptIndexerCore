@@ -8,6 +8,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace ScriptIndexerCore.Models
 {
+    [BsonIgnoreExtraElements]
     public class Movie
     {
         [BsonId] public ObjectId Id { get; set; }
@@ -30,7 +31,6 @@ namespace ScriptIndexerCore.Models
             }
             
         }
-
     }
 }
 

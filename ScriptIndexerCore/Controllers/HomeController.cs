@@ -9,6 +9,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using ScriptIndexerCore.Models;
 
+
 namespace ScriptIndexerCore.Controllers
 {
     public class HomeController : Controller
@@ -53,7 +54,7 @@ namespace ScriptIndexerCore.Controllers
         }
 
         [HttpGet]
-        public IActionResult Details(string movieID)
+        public IActionResult Details(object movieID)
         {
             string currMovieId = RouteData.Values["id"].ToString();
             if (currMovieId == null)
@@ -64,19 +65,12 @@ namespace ScriptIndexerCore.Controllers
             mongoDatabase = GetMongoDatabase();
 
             //fetch the details from DB and pass into view 
-            var collection = mongoDatabase.GetCollection<Movie>("moviescripts");
+            IMongoCollection<Movie> collection = mongoDatabase.GetCollection<Movie>("moviescripts");
 
-            //obtain objectid with our guid
-            var filter_id = Builders<Movie>.Filter.Eq("id", ObjectId.Parse(currMovieId));
-            //not finding movie
-            Movie movie = collection.Find<Movie>(filter_id).FirstOrDefault();
-
-            //var builder = Builders<Movie>.Filter;
-            //var filter = builder.Eq(x => x.Id.ToString(), currMovieId);
-            //var movie = collection.Find(filter).FirstOrDefault();
-
-
-
+            var builder = Builders<Movie>.Filter;
+            var objIdCurr = new ObjectId(currMovieId);
+            var filter_id = builder.Eq("_id", objIdCurr);
+            var movie = collection.Find(filter_id).FirstOrDefault();
 
             if (movie == null)
             {
@@ -164,7 +158,7 @@ namespace ScriptIndexerCore.Controllers
                 var result = mongoDatabase.GetCollection<Movie>("moviescripts").UpdateOne(filter, updatestatement);
                 if (result.IsAcknowledged == false)
                 {
-                    return BadRequest("Unable to update Customer  " + movie.filename);
+                    return BadRequest("Unable to update Movie  " + movie.filename);
                 }
             }
             catch (Exception ex)

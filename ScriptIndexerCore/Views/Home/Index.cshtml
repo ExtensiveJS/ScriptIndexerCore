@@ -4,6 +4,8 @@
     ViewData["Title"] = "Movie List";
 }
 <h2>Index</h2>
+
+
 <p>
     <a asp-action="Create">Create New Movie Entry</a>
 </p>
@@ -16,10 +18,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.filename)
             </th>
-            <th>
-                @*@Html.DisplayNameFor(model => model.filecontents)*@
-            </th>
-            <th>@*Actions*@</th>
+           <th>@*Actions*@</th>
         </tr>
         </thead>
         <tbody>
@@ -31,10 +30,7 @@
                 </td>
                 <td>
                     @{string fName = item.filename;}
-                    @Html.ActionLink(fName, "Details", new {id= item.IdStripped})
-                </td>
-                <td>
-                    @*@Html.DisplayFor(modelItem => item.filecontents)*@
+                    @Html.ActionLink(fName, "Details", new {id= item.Id})
                 </td>
                 <td>
                     @*@Html.ActionLink("Edit", "Edit", new { id = item.Id })*@ 
