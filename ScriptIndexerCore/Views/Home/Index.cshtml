@@ -17,7 +17,9 @@
             <label class="checkbox-inline"><input type="checkbox" id="chkCatOther" value="">Other</label>
         </div>
         <div style="padding-top:30px;">
-            <input type="button" id="btnSearch" class="btn btn-primary btn-sm" value="Search" onclick="runSearch();" />
+            <input type="button" class="btn btn-primary btn-sm" value="Search" onclick="runSearch();" />
+            <input type="button" class="btn btn-primary btn-sm" value="Curt Load Test" onclick="curtLoadTest();" />
+            <input type="button" class="btn btn-primary btn-sm" value="Curt Search Test" onclick="curtSearchTest();" />
         </div>
     </div>
     <div style="margin-top:30px;border-top:1px solid black;padding-top:5px;">
@@ -44,6 +46,36 @@
     function runSearch() {
         $.ajax({
             url: '/Home/Search/',
+            type: 'GET',
+            data: {
+            },
+            success: function (data) {
+                alert('success');
+                //location.reload(true);
+            },
+            fail: function (xhr, textStatus, errorThrown) {
+                alert('request failed');
+            }
+        });
+    };
+    function curtLoadTest() {
+        $.ajax({
+            url: '/Home/CurtSimpleLoad/',
+            type: 'GET',
+            data: {
+            },
+            success: function (data) {
+                alert('success');
+                //location.reload(true);
+            },
+            fail: function (xhr, textStatus, errorThrown) {
+                alert('request failed');
+            }
+        });
+    };
+    function curtSearchTest() {
+        $.ajax({
+            url: '/Home/CurtSimpleSearch/',
             type: 'GET',
             data: {
             },

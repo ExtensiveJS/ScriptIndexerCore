@@ -5,8 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using ScriptIndexerCore.Models;
+using System.IO;
 
 namespace ScriptIndexerCore.Controllers
 {
@@ -104,6 +106,87 @@ namespace ScriptIndexerCore.Controllers
                 return new StatusCodeResult(400);
             }
             
+        }
+
+        public string CurtSimpleLoad()
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.Load("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
+            MongoClient dbClient = new MongoClient("mongodb://" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText + ":" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText);
+            IMongoDatabase db = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
+            var movieCollection = db.GetCollection<BsonDocument>(doc.DocumentElement.SelectSingleNode("/settings/movie_collection_name").InnerText);
+
+            //BsonDocument movieDoc = new BsonDocument();
+            //BsonElement scriptTitle = new BsonElement("FileName", "some_movie (2099).srt");
+            //movieDoc.Add(scriptTitle);
+            //movieCollection.InsertOne(movieDoc);
+
+
+            foreach (string file in Directory.GetFiles(@"d:\\temp\\scripts\\"))
+            {
+                string contents = System.IO.File.ReadAllText(file);
+                BsonDocument movieDoc = new BsonDocument();
+                BsonElement scriptTitle = new BsonElement("FileName", file);
+                movieDoc.Add(scriptTitle);
+                BsonElement scriptContents = new BsonElement("Contents", contents);
+                movieDoc.Add(scriptContents);
+                movieCollection.InsertOne(movieDoc);
+            }
+
+
+            return "done";
+        }
+
+
+        public class searchFileByContents
+        {
+            public int Id { get; set; }
+            public string FileName { get; set; }
+            public string Contents { get; set; }
+        }
+        public string CurtSimpleSearch()
+        {
+            int Count = 0;
+            XmlDocument doc = new XmlDocument();
+            doc.Load("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
+            MongoClient dbClient = new MongoClient("mongodb://" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText + ":" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText);
+            var db = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
+            var movieCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/movie_collection_name").InnerText);
+
+            var filter_id = Builders<searchFileByContents>.Filter.Eq("contents", "the");
+
+            var coll = movieCollection.Find<searchFileByContents>(filter_id).FirstOrDefault();
+
+            //var notificationLogBuilder = Builders<searchFileByContents>.IndexKeys;
+            //var indexModel = new CreateIndexModel<searchFileByContents>(notificationLogBuilder.Ascending(x => x.FileName));
+            //movieCollection.Indexes.CreateOneAsync(indexModel);
+
+            //movieCollection.Indexes.CreateOne(Builders<searchFileByAuthor>.IndexKeys.Text(x => x.subject));
+
+            //var options = new CreateIndexOptions() { Unique = true };
+            //var field = new StringFieldDefinition<searchFileByContents>("contents");
+            //var indexDefinition = new IndexKeysDefinitionBuilder<searchFileByContents>().Ascending(field);
+            //db.GetCollection<searchFileByContents>("users").Indexes.CreateOne(indexDefinition, options);
+
+            //movieCollection.Aggregate()
+            //    .Match(Builders<BsonDocument>.Filter.Text("buckaroo"))
+            //    .Sort(Builders<BsonDocument>.Sort.MetaTextScore("FileName"))
+            //    .ToList();
+
+
+            //var builder = Builders<BsonDocument>.Filter;
+            //var filter = builder.Regex("Contents", "buckaroo");
+            //var result = movieCollection.Find(filter).ToList();
+            //Count = result.Count;
+
+            //var resultDoc = movieCollection.Find(new BsonDocument()).ToList();
+            //foreach (var item in resultDoc)
+            //{
+            //    Console.WriteLine(item.ToString());
+            //    Count = Count + 1;
+            //}
+
+            return "done " + Count;
         }
     }
 }
