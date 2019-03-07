@@ -285,7 +285,30 @@ namespace ScriptIndexerCore.Controllers
             return "done";
         }
 
+        public string MongoPurgeCollection(string collectionName)
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.Load("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
+            MongoClient dbClient = new MongoClient("mongodb://" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText + ":" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText);
+            var db = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
 
+            switch (collectionName){
+                case "Movies":
+                    var mongoMoviesCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/movie_collection_name").InnerText);
+                    var result1 = mongoMoviesCollection.DeleteMany(Builders<searchFileByContents>.Filter.Empty);
+                    break;
+                case "Shows":
+                    var mongoShowsCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/show_collection_name").InnerText);
+                    var result2 = mongoShowsCollection.DeleteMany(Builders<searchFileByContents>.Filter.Empty);
+                    break;
+                case "Misc":
+                    var mongoMiscCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/misc_collection_name").InnerText);
+                    var result3 = mongoMiscCollection.DeleteMany(Builders<searchFileByContents>.Filter.Empty);
+                    break;
+            }
+
+            return "OK";
+        }
         public class searchFileByContents
         {
             public ObjectId Id { get; set; }
