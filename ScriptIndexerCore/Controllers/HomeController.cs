@@ -256,30 +256,58 @@ namespace ScriptIndexerCore.Controllers
             
         }
 
-        public string MongoLoader(string fldrName)
+        public string MongoLoader(string fldrName, string collName)
         {
             XmlDocument doc = new XmlDocument();
             doc.Load("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
             MongoClient dbClient = new MongoClient("mongodb://" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText + ":" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText);
             IMongoDatabase db = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
-            var movieCollection = db.GetCollection<BsonDocument>(doc.DocumentElement.SelectSingleNode("/settings/movie_collection_name").InnerText);
-
-            //BsonDocument movieDoc = new BsonDocument();
-            //BsonElement scriptTitle = new BsonElement("FileName", "some_movie (2099).srt");
-            //movieDoc.Add(scriptTitle);
-            //movieCollection.InsertOne(movieDoc);
-
-
-            foreach (string file in Directory.GetFiles(fldrName))
+            
+            switch (collName)
             {
-                string contents = System.IO.File.ReadAllText(file);
-                BsonDocument movieDoc = new BsonDocument();
-                BsonElement scriptTitle = new BsonElement("FileName", file);
-                movieDoc.Add(scriptTitle);
-                BsonElement scriptContents = new BsonElement("Contents", contents);
-                movieDoc.Add(scriptContents);
-                movieCollection.InsertOne(movieDoc);
+                case "Movies":
+                    var movieCollection = db.GetCollection<BsonDocument>(doc.DocumentElement.SelectSingleNode("/settings/movie_collection_name").InnerText);
+                    foreach (string file in Directory.GetFiles(fldrName))
+                    {
+                        string contents = System.IO.File.ReadAllText(file);
+                        BsonDocument movieDoc = new BsonDocument();
+                        BsonElement scriptTitle = new BsonElement("FileName", file);
+                        movieDoc.Add(scriptTitle);
+                        BsonElement scriptContents = new BsonElement("Contents", contents);
+                        movieDoc.Add(scriptContents);
+                        movieCollection.InsertOne(movieDoc);
+                    }
+                    break;
+                case "Shows":
+                    var showCollection = db.GetCollection<BsonDocument>(doc.DocumentElement.SelectSingleNode("/settings/show_collection_name").InnerText);
+                    foreach (string file in Directory.GetFiles(fldrName))
+                    {
+                        string contents = System.IO.File.ReadAllText(file);
+                        BsonDocument showDoc = new BsonDocument();
+                        BsonElement scriptTitle = new BsonElement("FileName", file);
+                        showDoc.Add(scriptTitle);
+                        BsonElement scriptContents = new BsonElement("Contents", contents);
+                        showDoc.Add(scriptContents);
+                        showCollection.InsertOne(showDoc);
+                    }
+                    break;
+                case "Misc":
+                    var miscCollection = db.GetCollection<BsonDocument>(doc.DocumentElement.SelectSingleNode("/settings/misc_collection_name").InnerText);
+                    foreach (string file in Directory.GetFiles(fldrName))
+                    {
+                        string contents = System.IO.File.ReadAllText(file);
+                        BsonDocument miscDoc = new BsonDocument();
+                        BsonElement scriptTitle = new BsonElement("FileName", file);
+                        miscDoc.Add(scriptTitle);
+                        BsonElement scriptContents = new BsonElement("Contents", contents);
+                        miscDoc.Add(scriptContents);
+                        miscCollection.InsertOne(miscDoc);
+                    }
+                    break;
             }
+
+
+            
 
 
             return "done";

@@ -43,19 +43,19 @@
     <div style="padding-bottom:5px;"><h3>Database Maintenance</h3></div>
     <div style="width:33%;float: left;min-height:120px;">
         <h4>Movies</h4>
-        <button type="button" class="btn btn-primary btn-sm" onclick="runDriveSelect();">Add Files</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="runDriveSelect('Movies');">Add Files</button>
         <button disabled type="button" class="btn btn-primary btn-sm" onclick="alert('Build Index');">Build Index</button>
         <button type="button" class="btn btn-primary btn-sm" onclick="mongoPurge('Movies');">Purge Files</button>
     </div>
     <div style="width:33%;float: left;min-height:120px;">
         <h4>TV Shows</h4>
-        <button disabled type="button" class="btn btn-primary btn-sm" onclick="runDriveSelect();">Add Files</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="runDriveSelect('Shows');">Add Files</button>
         <button disabled type="button" class="btn btn-primary btn-sm" onclick="alert('Build Index');">Build Index</button>
         <button type="button" class="btn btn-primary btn-sm" onclick="mongoPurge('Shows');">Purge Files</button>
     </div>
     <div style="width:33%;float: left;min-height:120px;">
         <h4>Misc</h4>
-        <button disabled type="button" class="btn btn-primary btn-sm" onclick="runDriveSelect();">Add Files</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="runDriveSelect('Misc');">Add Files</button>
         <button disabled type="button" class="btn btn-primary btn-sm" onclick="alert('Build Index');">Build Index</button>
         <button type="button" class="btn btn-primary btn-sm" onclick="mongoPurge('Misc');">Purge Files</button>
     </div>
@@ -82,7 +82,7 @@
             <button type="button" style="float:right;" class="btn btn-primary btn-sm" onclick="fillFolder();">Select</button>
             <button type="button" style="float:right;margin-right:4px;" class="btn btn-primary btn-sm" onclick="$('#divDirBrowser').dialog('close');">Cancel</button>
         </div>
-        <div><input type="text" id="txtSelectFolderFull" hidden></div>
+        <div><input type="text" id="txtSelectFolderFull" hidden><input type="text" id="txtCollname" hidden /></div>
     </div>
 </div>
 <script>
@@ -102,7 +102,8 @@
             positon: { my: "top", at: "top" }
         })
     });
-    function runDriveSelect() {
+    function runDriveSelect(collName) {
+        $("#txtCollname").val(collName);
         $("#divDialog").dialog("open");
     };
     function browseForFolder() {
@@ -148,12 +149,14 @@
         $("#divDirBrowser").dialog("close");
     }
     function mongoLoader() {
+        alert($("#txtCollname").val());
         $("#spanWaiting").show();
         $.ajax({
             url: '/Home/MongoLoader/',
             type: 'GET',
             data: {
-                fldrName: $("#txtDestination").val()
+                fldrName: $("#txtDestination").val(),
+                collName: $("#txtCollname").val()
             },
             success: function (data) {
                 $("#divDialog").dialog("close");
