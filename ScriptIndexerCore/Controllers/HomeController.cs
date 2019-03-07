@@ -256,7 +256,7 @@ namespace ScriptIndexerCore.Controllers
             
         }
 
-        public string CurtSimpleLoad(string fldrName)
+        public string MongoLoader(string fldrName)
         {
             XmlDocument doc = new XmlDocument();
             doc.Load("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
