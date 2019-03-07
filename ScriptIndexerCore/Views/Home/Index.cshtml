@@ -54,7 +54,6 @@
         </div>
         <div style="padding-top:30px;">
             <input type="button" class="btn btn-primary btn-sm" value="Search" onclick="runSearch();" />
-            <input type="button" class="btn btn-primary btn-sm" value="Curt Load Test" onclick="curtLoadTest();" />
             <input type="button" class="btn btn-primary btn-sm" value="Curt Search Test" onclick="curtSearchTest();" />
         </div>
     </div>
@@ -82,21 +81,6 @@
     function runSearch() {
         $.ajax({
             url: '/Home/Search/',
-            type: 'GET',
-            data: {
-            },
-            success: function (data) {
-                alert('success');
-                //location.reload(true);
-            },
-            fail: function (xhr, textStatus, errorThrown) {
-                alert('request failed');
-            }
-        });
-    };
-    function curtLoadTest() {
-        $.ajax({
-            url: '/Home/CurtSimpleLoad/',
             type: 'GET',
             data: {
             },

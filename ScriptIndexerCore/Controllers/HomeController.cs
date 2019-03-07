@@ -256,7 +256,7 @@ namespace ScriptIndexerCore.Controllers
             
         }
 
-        public string CurtSimpleLoad()
+        public string CurtSimpleLoad(string fldrName)
         {
             XmlDocument doc = new XmlDocument();
             doc.Load("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
@@ -270,7 +270,7 @@ namespace ScriptIndexerCore.Controllers
             //movieCollection.InsertOne(movieDoc);
 
 
-            foreach (string file in Directory.GetFiles(@"d:\\temp\\scripts\\"))
+            foreach (string file in Directory.GetFiles(fldrName))
             {
                 string contents = System.IO.File.ReadAllText(file);
                 BsonDocument movieDoc = new BsonDocument();
@@ -307,5 +307,19 @@ namespace ScriptIndexerCore.Controllers
 
             return "done " + Count;
         }
+
+        public List<String> GetFolders(string startDir)
+        {
+            List<String> Ret = new List<string>();
+            foreach (string fldrName in Directory.GetDirectories(startDir))
+            {
+                Ret.Add(fldrName);
+            }
+            return Ret;
+        }
+
+
+
+
     }
 }

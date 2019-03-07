@@ -39,9 +39,121 @@
 
 </div>
 
+<div style="border:1px solid black;border-radius:5px;padding:5px;margin-top:10px;">
+    <div style="padding-bottom:5px;"><h3>Database Maintenance</h3></div>
+    <div style="height:35px;margin-left:20px;">
+        <button type="button" class="btn btn-primary btn-sm" onclick="runDriveSelect();">Add Files</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="alert('Build Index');">Build Index</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="alert('Purge Files');">Purge Files</button>
+    </div>
+</div>
+<div id="divDialog" title="Validate Source" style="border-radius:3px;padding:10px;border:1px solid lightgrey;">
+    <div style="height:35px;">
+        <i class="glyphicon glyphicon-folder-open" style="padding-top:5px;padding-right:5px;font-size:larger;float:right;" onclick="browseForFolder();"></i>
+        <input type="text" id="txtDestination" class="form-control" style="width:240px;" value="c:\" />
+    </div>
+    <div style="margin-top:15px;">
+        <input type="button" style="float:right;" value="Start" class="btn btn-primary btn-sm" onclick="curtLoadTest();">
+        <button type="button" style="float:right;margin-right:4px;" class="btn btn-primary btn-sm" onclick="$('#divDialog').dialog('close');">Cancel</button>
+    </div>
+</div>
+<div id="divDirBrowser" title="Folder Browser" style="border-radius:5px;">
+    <div>
+        <div>
+            <input type="text" id="txtSelectedFolder" class="input-sm" style="float:left;width:100%;">
+        </div>
+        <div id="divDirList" style="background-color:white;width:100%;height:270px;border:1px groove black;overflow:auto; ">
+            &nbsp;
+        </div>
+        <div style="padding-top:5px;">
+            <button type="button" style="float:right;" class="btn btn-primary btn-sm" onclick="fillFolder();">Select</button>
+            <button type="button" style="float:right;margin-right:4px;" class="btn btn-primary btn-sm" onclick="$('#divDirBrowser').dialog('close');">Cancel</button>
+        </div>
+        <div><input type="text" id="txtSelectFolderFull" hidden></div>
+    </div>
+</div>
 <script>
     $(function () {
+        $("#divDialog").dialog({
+            autoOpen: false,
+            height: 150,
+            width: 310,
+            modal: true,
+            position: { my: "bottom", at: "center" }
+        })
+        $("#divDirBrowser").dialog({
+            autoOpen: false,
+            modal: true,
+            height: 400,
+            width: 450,
+            positon: { my: "top", at: "top" }
+        })
     });
+    function runDriveSelect() {
+        $("#divDialog").dialog("open");
+    };
+    function browseForFolder() {
+        $("#divDirBrowser").dialog("open");
+        $("#txtSelectFolderFull").val($("#txtDestination").val());
+        $("#txtSelectedFolder").val($("#txtDestination").val());
+        goGetFolders($("#txtDestination").val())
+    }
+    function goGetFolders(f) {
+        $("#txtSelectFolderFull").val(f);
+        $("#txtSelectedFolder").val(f);
+        $.ajax({
+            url: '/Home/GetFolders/',
+            type: 'POST',
+            data: {
+                startDir: f
+            },
+            success: function (data) {
+                var dc = "";
+                var count = ($("#txtSelectedFolder").val().match(/\\/g) || []).length;
+                if (count > 1) {
+                    var upFolder = $("#txtSelectedFolder").val().lastIndexOf("\\");
+                    var upFolderUp = $("#txtSelectedFolder").val().substring(0, upFolder).lastIndexOf("\\");
+                    var upFolderUpText = $("#txtSelectedFolder").val().substring(0, upFolderUp + 1);
+                    dc = dc + "<div style='padding-left:3px;cursor:pointer;' ondblclick=\"goGetFolders('" + upFolderUpText.replace(/\\/g, '\\\\') + "');\"><i class='glyphicon glyphicon-arrow-up' style='padding-right:3px;'></i>...</div>";
+                } else {
+                    //dc = dc + "<div style='padding-left:3px;'><i class='glyphicon glyphicon-hdd' style='padding-right:3px;'></i>My Computer</div>";
+                };
+                for (index = 0; index < data.length; ++index) {
+                    var newFldr = data[index] + "\\";
+                    dc = dc + "<div ondblclick=\"goGetFolders('" + newFldr.replace(/\\/g, '\\\\') + "');\" style='padding-left:3px;cursor:pointer;'><i class='glyphicon glyphicon-folder-close' style='padding-right:3px;'></i>" + data[index] + "</div>";
+                }
+                $("#divDirList").html(dc);
+
+            },
+            fail: function (xhr, textStatus, errorThrown) {
+                alert('request failed');
+            }
+        });
+    }
+    function fillFolder() {
+        $("#txtDestination").val($("#txtSelectedFolder").val());
+        $("#divDirBrowser").dialog("close");
+    }
+    function curtLoadTest() {
+        $("#spanWaiting").show();
+        $.ajax({
+            url: '/Home/CurtSimpleLoad/',
+            type: 'GET',
+            data: {
+                fldrName: $("#txtDestination").val()
+            },
+            success: function (data) {
+                $("#divDialog").dialog("close");
+                alert('success');
+                $("#spanWaiting").hide();
+            },
+            fail: function (xhr, textStatus, errorThrown) {
+                $("#divDialog").dialog("close");
+                $("#spanWaiting").hide();
+                alert('request failed');
+            }
+        });
+    };
     function runSave() {
         $.ajax({
             url: '/Home/SaveSettings/',
