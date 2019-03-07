@@ -1,0 +1,54 @@
+﻿@model ScriptIndexerCore.Models.Movie
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Movie</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.filename)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.filename)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.filedate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.filedate)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.filetype)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.filetype)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.filecontents)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.filecontents)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.filecontentsparsed)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.filecontentsparsed)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.IdStripped)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.IdStripped)
+        </dd>
+    </dl>
+</div>
+<div>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    <a asp-action="Index">Back to List</a>
+</div>
