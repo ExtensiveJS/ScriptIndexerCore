@@ -1,0 +1,91 @@
+﻿@{
+    ViewData["Title"] = "SiteSettings";
+}
+
+<h2>Settings</h2>
+
+<div style="border:1px solid black;border-radius:5px;padding:5px;">
+    <div style="padding-bottom:5px;"><h3>Mongo Settings</h3></div>
+    <div style="height:35px;">
+        <div style="width:175px;float:left;text-align:right;padding-right:5px;margin-top:7px;">MongoDB Path:</div>
+        <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtMongoPath" value="@Model.Mongodb_path" /></div>
+    </div>
+    <div style="height:35px;">
+        <div style="width:175px;float:left;text-align:right;padding-right:5px;margin-top:7px;">MongoDB Port:</div>
+        <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtMongoPort" style="width:75px;" value="@Model.Mongodb_port" /></div>
+    </div>
+    <div style="height:35px;">
+        <div style="width:175px;float:left;text-align:right;padding-right:5px;margin-top:7px;">Database Name:</div>
+        <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtDatabaseName" value="@Model.Database_name" /></div>
+    </div>
+    <div style="height:35px;">
+        <div style="width:175px;float:left;text-align:right;padding-right:5px;margin-top:7px;">Movie Collection Name:</div>
+        <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtMovieCollectionName" value="@Model.Movie_collection_name" /></div>
+    </div>
+    <div style="height:35px;">
+        <div style="width:175px;float:left;text-align:right;padding-right:5px;margin-top:7px;">Show Collection Name:</div>
+        <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtShowCollectionName" value="@Model.Show_collection_name" /></div>
+    </div>
+    <div style="height:35px;">
+        <div style="width:175px;float:left;text-align:right;padding-right:5px;margin-top:7px;">Misc Collection Name:</div>
+        <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtMiscCollectionName" value="@Model.Misc_collection_name" /></div>
+    </div>
+    <div style="height:35px;">
+        <div style="float:right;">
+            <button type="button" class="btn btn-primary btn-sm" onclick="runSave();">Save</button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="runTest();">Test Connection</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    $(function () {
+    });
+    function runSave() {
+        $.ajax({
+            url: '/Home/SaveSettings/',
+            type: 'POST',
+            data: {
+                mongoPath: $("#txtMongoPath").val(),
+                mongoPort: $("#txtMongoPort").val(),
+                databaseName: $("#txtDatabaseName").val(),
+                movieCollectionName: $("#txtMovieCollectionName").val(),
+                showCollectionName: $("#txtShowCollectionName").val(),
+                miscCollectionName: $("#txtMiscCollectionName").val()
+            },
+            success: function (data) {
+                alert('Settings Saved');
+                location.reload(true);
+            },
+            fail: function (xhr, textStatus, errorThrown) {
+                alert('request failed');
+            }
+        });
+    };
+    function runTest() {
+        $("#spanWaiting").show();
+        $.ajax({
+            url: '/Home/TestMongo/',
+            type: 'GET',
+            data: {
+            },
+            success: function (data) {
+                $("#spanWaiting").hide();
+                alert('Connection Successful');
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                if (xhr.status == 404) {
+                    alert("Connection Failed 404");
+                } else {
+                    alert("Connection Failed");
+                }
+                $("#spanWaiting").hide();
+            },
+            fail: function (xhr, textStatus, errorThrown) {
+                $("#spanWaiting").hide();
+                alert('request failed');
+            }
+        });
+    }
+</script>

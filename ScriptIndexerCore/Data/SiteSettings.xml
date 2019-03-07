@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<settings>
+  <mongodb_path>localhost</mongodb_path>
+  <mongodb_port>27017</mongodb_port>
+  <database_name>ScriptIndexer</database_name>
+  <movie_collection_name>ScriptIndexerMovieCollection</movie_collection_name>
+  <show_collection_name>ScriptIndexerTVCollection</show_collection_name>
+  <misc_collection_name>ScriptIndexerMiscCollection</misc_collection_name>
+</settings>

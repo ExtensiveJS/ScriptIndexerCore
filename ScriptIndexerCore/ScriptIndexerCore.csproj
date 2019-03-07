@@ -10,6 +10,47 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.8" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
     <PackageReference Include="MongoDB.Driver" Version="2.7.3" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\scripts\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\scripts\DataTables-1.10.18\css\dataTables.bootstrap.css" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\css\dataTables.bootstrap.min.css" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\css\dataTables.bootstrap4.css" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\css\dataTables.bootstrap4.min.css" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\css\dataTables.foundation.css" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\css\dataTables.foundation.min.css" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\css\dataTables.jqueryui.css" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\css\dataTables.jqueryui.min.css" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\css\dataTables.semanticui.css" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\css\dataTables.semanticui.min.css" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\css\jquery.dataTables.css" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\css\jquery.dataTables.min.css" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\images\sort_asc.png" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\images\sort_asc_disabled.png" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\images\sort_both.png" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\images\sort_desc.png" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\images\sort_desc_disabled.png" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\js\dataTables.bootstrap.js" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\js\dataTables.bootstrap.min.js" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\js\dataTables.bootstrap4.js" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\js\dataTables.bootstrap4.min.js" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\js\dataTables.foundation.js" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\js\dataTables.foundation.min.js" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\js\dataTables.jqueryui.js" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\js\dataTables.jqueryui.min.js" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\js\dataTables.semanticui.js" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\js\dataTables.semanticui.min.js" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\js\jquery.dataTables.js" />
+    <None Include="wwwroot\scripts\DataTables-1.10.18\js\jquery.dataTables.min.js" />
+    <None Include="wwwroot\scripts\datatables.css" />
+    <None Include="wwwroot\scripts\datatables.js" />
+    <None Include="wwwroot\scripts\datatables.min.css" />
+    <None Include="wwwroot\scripts\datatables.min.js" />
   </ItemGroup>
 
 </Project>
