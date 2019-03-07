@@ -170,6 +170,10 @@ namespace ScriptIndexerCore.Controllers
             return RedirectToAction("Index");
         }
 
+        /// <summary>
+        /// This is the SiteSettings page load method and populates all the Model values for display on the page.
+        /// </summary>
+        /// <returns></returns>
         public IActionResult SiteSettings()
         {
             XmlDocument doc = new XmlDocument();
@@ -190,11 +194,6 @@ namespace ScriptIndexerCore.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-
-        public String RunTest()
-        {
-            return "OK";
         }
 
         public String Search()
@@ -219,6 +218,10 @@ namespace ScriptIndexerCore.Controllers
             return Ret;
         }
 
+        /// <summary>
+        /// This method lets us run the TEST CONNECTION from the Settings UI.
+        /// </summary>
+        /// <returns></returns>
         public ActionResult TestMongo()
         {
             bool Ret = true;
@@ -285,7 +288,7 @@ namespace ScriptIndexerCore.Controllers
 
         public class searchFileByContents
         {
-            public int Id { get; set; }
+            public ObjectId Id { get; set; }
             public string FileName { get; set; }
             public string Contents { get; set; }
         }
@@ -298,38 +301,9 @@ namespace ScriptIndexerCore.Controllers
             var db = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
             var movieCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/movie_collection_name").InnerText);
 
-            var filter_id = Builders<searchFileByContents>.Filter.Eq("contents", "the");
-
-            var coll = movieCollection.Find<searchFileByContents>(filter_id).FirstOrDefault();
-
-            //var notificationLogBuilder = Builders<searchFileByContents>.IndexKeys;
-            //var indexModel = new CreateIndexModel<searchFileByContents>(notificationLogBuilder.Ascending(x => x.FileName));
-            //movieCollection.Indexes.CreateOneAsync(indexModel);
-
-            //movieCollection.Indexes.CreateOne(Builders<searchFileByAuthor>.IndexKeys.Text(x => x.subject));
-
-            //var options = new CreateIndexOptions() { Unique = true };
-            //var field = new StringFieldDefinition<searchFileByContents>("contents");
-            //var indexDefinition = new IndexKeysDefinitionBuilder<searchFileByContents>().Ascending(field);
-            //db.GetCollection<searchFileByContents>("users").Indexes.CreateOne(indexDefinition, options);
-
-            //movieCollection.Aggregate()
-            //    .Match(Builders<BsonDocument>.Filter.Text("buckaroo"))
-            //    .Sort(Builders<BsonDocument>.Sort.MetaTextScore("FileName"))
-            //    .ToList();
-
-
-            //var builder = Builders<BsonDocument>.Filter;
-            //var filter = builder.Regex("Contents", "buckaroo");
-            //var result = movieCollection.Find(filter).ToList();
-            //Count = result.Count;
-
-            //var resultDoc = movieCollection.Find(new BsonDocument()).ToList();
-            //foreach (var item in resultDoc)
-            //{
-            //    Console.WriteLine(item.ToString());
-            //    Count = Count + 1;
-            //}
+            var filter = Builders<searchFileByContents>.Filter.Eq(x => x.FileName, "TheFileName");
+            var results = movieCollection.Find(filter).ToList();
+            Count = results.Count();
 
             return "done " + Count;
         }
