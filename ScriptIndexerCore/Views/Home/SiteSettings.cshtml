@@ -44,7 +44,7 @@
     <div style="width:33%;float: left;min-height:120px;">
         <h4>Movies</h4>
         <button type="button" class="btn btn-primary btn-sm" onclick="runDriveSelect('Movies');">Add Files</button>
-        <button disabled type="button" class="btn btn-primary btn-sm" onclick="alert('Build Index');">Build Index</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="runBuildIndex('Movies');">Build Index</button>
         <button type="button" class="btn btn-primary btn-sm" onclick="mongoPurge('Movies');">Purge Files</button>
     </div>
     <div style="width:33%;float: left;min-height:120px;">
@@ -224,6 +224,28 @@
                 type: 'GET',
                 data: {
                     collectionName: collName
+                },
+                success: function (data) {
+                    $("#divDialog").dialog("close");
+                    alert('success');
+                    $("#spanWaiting").hide();
+                },
+                fail: function (xhr, textStatus, errorThrown) {
+                    $("#divDialog").dialog("close");
+                    $("#spanWaiting").hide();
+                    alert('request failed');
+                }
+            });
+        }
+    }
+    function runBuildIndex(colName) {
+        if (confirm("Are you POSITIVE you want to initiate an Index Build???")) {
+            $("#spanWaiting").show();
+            $.ajax({
+                url: '/Home/MongoBuildIndex/',
+                type: 'GET',
+                data: {
+                    collectionName: colName
                 },
                 success: function (data) {
                     $("#divDialog").dialog("close");

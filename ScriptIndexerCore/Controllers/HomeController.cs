@@ -9,7 +9,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using ScriptIndexerCore.Models;
 using System.IO;
-
+using System.Threading;
 
 namespace ScriptIndexerCore.Controllers
 {
@@ -369,7 +369,34 @@ namespace ScriptIndexerCore.Controllers
             return Ret;
         }
 
+        public string MongoBuildIndex(string collectionName)
+        {
+            //var tsk = CreateIndex();
+            //var rslt = tsk.WaitAndUnwrapException();
+            //var result = AsyncContext.RunTask(CreateIndex).Result;
+            CreateIndex().GetAwaiter().GetResult();
+            return "OK";
+        }
+        static async Task CreateIndex()
+        {
+            //var client = new MongoClient();
+            //var database = client.GetDatabase("ScriptIndexer");
+            //var collection = database.GetCollection<searchFileByContents>("ScriptIndexerMovieCollection");
+            //await collection.Indexes.CreateOneAsync(Builders<searchFileByContents>.IndexKeys.Ascending(_ => _.FileName));
 
+            //var client = new MongoClient("mongodb://localhost");
+            //var db = client.GetDatabase("ScriptIndexer");
+            //var collection = db.GetCollection<searchFileByContents>("Hamsters");
+            //collection.Indexes.CreateOne(Builders<searchFileByContents>.IndexKeys.Ascending(_ => _.FileName));
+
+            var client = new MongoClient();
+            var database = client.GetDatabase("ScriptIndexer");
+            var collection = database.GetCollection<searchFileByContents>("ScriptIndexerMovieCollection");
+            var notificationLogBuilder = Builders<searchFileByContents>.IndexKeys;
+            var indexModel = new CreateIndexModel<searchFileByContents>(notificationLogBuilder.Ascending(x => x.FileName));
+            await collection.Indexes.CreateOneAsync(indexModel).ConfigureAwait(false);
+
+        }
 
 
     }
