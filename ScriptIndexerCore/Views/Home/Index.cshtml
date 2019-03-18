@@ -1,44 +1,9 @@
-@model IEnumerable<ScriptIndexerCore.Models.Movie>
+@model IEnumerable<ScriptIndexerCore.Models.HomeModel>
 @{
-    ViewData["Title"] = "Movie List";
+    ViewData["Title"] = "Search/Results List";
 }
-<h2>Index</h2>
+<h2>Search</h2>
 
-<p>
-    <a asp-action="Create">Create New Movie Entry</a>
-</p>
-<table class="table table-bordered" style="width:600px">
-        <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.filename)
-            </th>
-           <th>@*Actions*@</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.IdStripped)
-                </td>
-                <td>
-                    @{string fName = item.filename;}
-                    @Html.ActionLink(fName, "Details", new {id= item.Id})
-                </td>
-                <td>
-                    @*@Html.ActionLink("Edit", "Edit", new { id = item.Id })*@ 
-                    @*@Html.ActionLink("Details", "Details", new { id = item.Id })*@ 
-                    @*@Html.ActionLink("Delete", "Delete", new { id = item.Id })*@
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
 <div>
     <h2>Search</h2>
     <div>
@@ -54,7 +19,6 @@
         </div>
         <div style="padding-top:30px;">
             <input type="button" class="btn btn-primary btn-sm" value="Search" onclick="runSearch();" />
-            <input type="button" class="btn btn-primary btn-sm" value="Curt Search Test" onclick="curtSearchTest();" />
         </div>
     </div>
     <div style="margin-top:30px;border-top:1px solid black;padding-top:5px;">
@@ -76,24 +40,9 @@
         $('#tblResults').dataTable();
     });
     function runSearch() {
-        $.ajax({
-            url: '/Home/Search/',
-            type: 'GET',
-            data: {
-            },
-            success: function (data) {
-                alert('success');
-                //location.reload(true);
-            },
-            fail: function (xhr, textStatus, errorThrown) {
-                alert('request failed');
-            }
-        });
-    };
-    function curtSearchTest() {
         var myTable = $('#tblResults').DataTable();
         $.ajax({
-            url: '/Home/CurtSimpleSearch/',
+            url: '/Home/Search/',
             type: 'GET',
             data: {
                 searchText: $("#txtSearchText").val()
@@ -101,7 +50,6 @@
             success: function (data) {
                 alert('1');
                 for (i = 0; i <= data.length - 1; i++) {
-                    //alert('success: ' + data[i].fileName);
                     myTable.row.add([data[i].fileName]);
                 }
                 alert('2');
