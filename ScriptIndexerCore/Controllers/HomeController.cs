@@ -352,7 +352,7 @@ namespace ScriptIndexerCore.Controllers
             var db = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
             var movieCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/movie_collection_name").InnerText);
 
-            var filter = Builders<searchFileByContents>.Filter.Eq(x => x.FileName, "TheFileName");
+            var filter = Builders<searchFileByContents>.Filter.Eq(x => x.Contents, "Midway");
             var results = movieCollection.Find(filter).ToList();
             Count = results.Count();
 
@@ -393,9 +393,13 @@ namespace ScriptIndexerCore.Controllers
             var database = client.GetDatabase("ScriptIndexer");
             var collection = database.GetCollection<searchFileByContents>("ScriptIndexerMovieCollection");
             var notificationLogBuilder = Builders<searchFileByContents>.IndexKeys;
-            var indexModel = new CreateIndexModel<searchFileByContents>(notificationLogBuilder.Ascending(x => x.FileName));
+            var indexModel = new CreateIndexModel<searchFileByContents>(notificationLogBuilder.Text(x => x.Contents));
             await collection.Indexes.CreateOneAsync(indexModel).ConfigureAwait(false);
+            //await collection.Indexes.CreateOneAsync(indexModel).ConfigureAwait(false);
 
+            //var opt = new CreateOneIndexOptions({ Contents: "text" });
+            //collection.Indexes.CreateOne(indexModel, opt);
+            
         }
 
 
