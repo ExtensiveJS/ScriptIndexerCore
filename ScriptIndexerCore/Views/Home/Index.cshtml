@@ -64,10 +64,7 @@
                     <th>Title</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>Title 1 Here</td>
-                </tr>
+            <tbody id="tblResultsBody">
             </tbody>
         </table>
     </div>
@@ -94,14 +91,21 @@
         });
     };
     function curtSearchTest() {
+        var myTable = $('#tblResults').DataTable();
         $.ajax({
             url: '/Home/CurtSimpleSearch/',
             type: 'GET',
             data: {
+                searchText: $("#txtSearchText").val()
             },
             success: function (data) {
-                alert('success');
-                //location.reload(true);
+                alert('1');
+                for (i = 0; i <= data.length - 1; i++) {
+                    //alert('success: ' + data[i].fileName);
+                    myTable.row.add([data[i].fileName]);
+                }
+                alert('2');
+                myTable.draw();
             },
             fail: function (xhr, textStatus, errorThrown) {
                 alert('request failed');

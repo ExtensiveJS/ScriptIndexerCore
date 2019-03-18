@@ -343,8 +343,9 @@ namespace ScriptIndexerCore.Controllers
             public string FileName { get; set; }
             public string Contents { get; set; }
         }
-        public string CurtSimpleSearch()
+        public List<searchFileByContents> CurtSimpleSearch(string searchText)
         {
+            var ret = new List<searchFileByContents>();
             int Count = 0;
             XmlDocument doc = new XmlDocument();
             doc.Load("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
@@ -352,11 +353,11 @@ namespace ScriptIndexerCore.Controllers
             var db = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
             var movieCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/movie_collection_name").InnerText);
 
-            var filter = Builders<searchFileByContents>.Filter.Eq(x => x.Contents, "Midway");
+            var filter = Builders<searchFileByContents>.Filter.Text(searchText);
             var results = movieCollection.Find(filter).ToList();
             Count = results.Count();
-
-            return "done " + Count;
+            ret = results;
+            return ret;
         }
 
         public List<String> GetFolders(string startDir)
