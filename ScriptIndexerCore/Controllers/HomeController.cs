@@ -315,6 +315,55 @@ namespace ScriptIndexerCore.Controllers
 
         }
 
+        public class mongoStats
+        {
+            public long MovieCount { get; set; }
+            public long ShowCount { get; set; }
+            public long MiscCount { get; set; }
+            public string MovieIndexes { get; set; }
+        }
+        public mongoStats MongoGetStats()
+        {
+            mongoStats ret = new mongoStats();
+            ret.MiscCount = 0;
+            ret.MovieCount = 0;
+            ret.ShowCount = 0;
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
+            MongoClient dbClient = new MongoClient("mongodb://" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText + ":" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText);
+            var db = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
+            var filter = Builders<searchFileByContents>.Filter.Empty;
+
+            var movieCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/movie_collection_name").InnerText);
+            ret.MovieCount = movieCollection.Count(filter);
+            var movieIndexList = movieCollection.Indexes.List();
+            while (movieIndexList.MoveNext())
+            {
+                var currentIndex = movieIndexList.Current;
+                foreach (var bdoc in currentIndex)
+                {
+                    var docNames = bdoc.Names;
+                    foreach (string name in docNames)
+                    {
+                        if(name == "name")
+                        {
+                            var value = bdoc.GetValue(name);
+                            ret.MovieIndexes = ret.MovieIndexes + string.Concat(name, ": ", value) + "<br />";
+                        }
+                        
+                    }
+                }
+            }
+
+
+            var showCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/show_collection_name").InnerText);
+            ret.ShowCount = showCollection.Count(filter);
+
+            var miscCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/misc_collection_name").InnerText);
+            ret.MiscCount = miscCollection.Count(filter);
+            return ret;
+        }
 
     }
 }
