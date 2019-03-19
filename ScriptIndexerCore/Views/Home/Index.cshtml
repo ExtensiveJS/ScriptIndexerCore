@@ -47,11 +47,9 @@
                 searchText: $("#txtSearchText").val()
             },
             success: function (data) {
-                alert('1');
                 for (i = 0; i <= data.length - 1; i++) {
                     myTable.row.add([data[i].fileName]);
                 }
-                alert('2');
                 myTable.draw();
             },
             fail: function (xhr, textStatus, errorThrown) {

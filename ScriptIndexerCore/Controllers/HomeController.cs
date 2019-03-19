@@ -123,7 +123,7 @@ namespace ScriptIndexerCore.Controllers
                         movieDoc.Add(scriptTitle);
                         BsonElement scriptContents = new BsonElement("Contents", contents);
                         movieDoc.Add(scriptContents);
-                        BsonElement scriptType = new BsonElement("Type", "Movie");
+                        BsonElement scriptType = new BsonElement("Category", "Movie");
                         movieDoc.Add(scriptType);
                         movieCollection.InsertOne(movieDoc);
                     }
@@ -138,7 +138,7 @@ namespace ScriptIndexerCore.Controllers
                         showDoc.Add(scriptTitle);
                         BsonElement scriptContents = new BsonElement("Contents", contents);
                         showDoc.Add(scriptContents);
-                        BsonElement scriptType = new BsonElement("Type", "Show");
+                        BsonElement scriptType = new BsonElement("Category", "Show");
                         showDoc.Add(scriptType);
                         showCollection.InsertOne(showDoc);
                     }
@@ -153,7 +153,7 @@ namespace ScriptIndexerCore.Controllers
                         miscDoc.Add(scriptTitle);
                         BsonElement scriptContents = new BsonElement("Contents", contents);
                         miscDoc.Add(scriptContents);
-                        BsonElement scriptType = new BsonElement("Type", "Other");
+                        BsonElement scriptType = new BsonElement("Category", "Other");
                         miscDoc.Add(scriptType);
                         miscCollection.InsertOne(miscDoc);
                     }
@@ -227,19 +227,80 @@ namespace ScriptIndexerCore.Controllers
 
         public string MongoBuildIndex(string collectionName)
         {
-            CreateIndex().GetAwaiter().GetResult();
+            CreateIndex(collectionName).GetAwaiter().GetResult();
             return "OK";
         }
-        static async Task CreateIndex()
+        public string MongoDeleteIndex(string collectionName)
         {
-            
+            DeleteIndex(collectionName).GetAwaiter().GetResult();
+            return "OK";
+        }
+        static async Task DeleteIndex(string collectionName)
+        {
             var client = new MongoClient();
             var database = client.GetDatabase("ScriptIndexer");
-            var collection = database.GetCollection<searchFileByContents>("ScriptIndexerMovieCollection");
+
+            switch (collectionName)
+            {
+                case "Movies":
+                    var movieCollection = database.GetCollection<searchFileByContents>("ScriptIndexerMovieCollection");
+                    try
+                    {
+                        await movieCollection.Indexes.DropOneAsync("Contents_text");
+                    }
+                    catch {
+                        // just eat the error
+                    }
+                    break;
+                case "Shows":
+                    var showCollection = database.GetCollection<searchFileByContents>("ScriptIndexerShowCollection");
+                    try
+                    {
+                        await showCollection.Indexes.DropOneAsync("Contents_text");
+                    }
+                    catch
+                    {
+                        // just eat the error
+                    }
+                    break;
+                case "Misc":
+                    var otherCollection = database.GetCollection<searchFileByContents>("ScriptIndexerMiscCollection");
+                    try
+                    {
+                        await otherCollection.Indexes.DropOneAsync("Contents_text");
+                    }
+                    catch
+                    {
+                        // just eat the error
+                    }
+                    break;
+            }
+        }
+        static async Task CreateIndex(string collectionName)
+        {
+
+            var client = new MongoClient();
+            var database = client.GetDatabase("ScriptIndexer");
+                       
             var notificationLogBuilder = Builders<searchFileByContents>.IndexKeys;
             var indexModel = new CreateIndexModel<searchFileByContents>(notificationLogBuilder.Text(x => x.Contents));
-            await collection.Indexes.CreateOneAsync(indexModel).ConfigureAwait(false);
-            
+
+            switch (collectionName)
+            {
+                case "Movies":
+                    var movieCollection = database.GetCollection<searchFileByContents>("ScriptIndexerMovieCollection");
+                    await movieCollection.Indexes.CreateOneAsync(indexModel).ConfigureAwait(false);
+                    break;
+                case "Shows":
+                    var showCollection = database.GetCollection<searchFileByContents>("ScriptIndexerShowCollection");
+                    await showCollection.Indexes.CreateOneAsync(indexModel).ConfigureAwait(false);
+                    break;
+                case "Misc":
+                    var otherCollection = database.GetCollection<searchFileByContents>("ScriptIndexerMiscCollection");
+                    await otherCollection.Indexes.CreateOneAsync(indexModel).ConfigureAwait(false);
+                    break;
+            }
+
         }
 
 
