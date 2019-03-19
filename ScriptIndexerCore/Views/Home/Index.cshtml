@@ -25,6 +25,7 @@
             <thead>
                 <tr>
                     <th>Title</th>
+                    <th style="width:120px;">Category</th>
                 </tr>
             </thead>
             <tbody id="tblResultsBody">
@@ -40,15 +41,19 @@
     });
     function runSearch() {
         var myTable = $('#tblResults').DataTable();
+        myTable.clear();
         $.ajax({
             url: '/Home/Search/',
             type: 'GET',
             data: {
-                searchText: $("#txtSearchText").val()
+                searchText: $("#txtSearchText").val(),
+                searchMovies: $('#chkCatMovie').is(":checked"),
+                searchShows: $('#chkCatTV').is(":checked"),
+                searchMisc: $('#chkCatOther').is(":checked")
             },
             success: function (data) {
                 for (i = 0; i <= data.length - 1; i++) {
-                    myTable.row.add([data[i].fileName]);
+                    myTable.row.add([data[i].fileName, data[i].category]);
                 }
                 myTable.draw();
             },

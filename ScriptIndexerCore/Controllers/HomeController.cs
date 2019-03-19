@@ -198,20 +198,32 @@ namespace ScriptIndexerCore.Controllers
             public string Contents { get; set; }
             public string Category { get; set; }
         }
-        public List<searchFileByContents> Search(string searchText)
+        public List<searchFileByContents> Search(string searchText, bool searchMovies, bool searchShows, bool searchMisc)
         {
             var ret = new List<searchFileByContents>();
-            int Count = 0;
             XmlDocument doc = new XmlDocument();
             doc.Load("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
             MongoClient dbClient = new MongoClient("mongodb://" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText + ":" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText);
             var db = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
-            var movieCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/movie_collection_name").InnerText);
-
             var filter = Builders<searchFileByContents>.Filter.Text(searchText);
-            var results = movieCollection.Find(filter).ToList();
-            Count = results.Count();
-            ret = results;
+            if (searchMovies)
+            {
+                var movieCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/movie_collection_name").InnerText);
+                var movieResults = movieCollection.Find(filter).ToList();
+                ret.AddRange(movieResults);
+            }
+            if (searchShows)
+            {
+                var showCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/show_collection_name").InnerText);
+                var showResults = showCollection.Find(filter).ToList();
+                ret.AddRange(showResults);
+            }
+            if (searchMisc)
+            {
+                var miscCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/misc_collection_name").InnerText);
+                var miscResults = miscCollection.Find(filter).ToList();
+                ret.AddRange(miscResults);
+            }
             return ret;
         }
 
