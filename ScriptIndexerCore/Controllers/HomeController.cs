@@ -15,6 +15,13 @@ namespace ScriptIndexerCore.Controllers
 {
     public class HomeController : Controller
     {
+        public HomeController()
+        {
+            string settingsFileName = @"\Data\SiteSettings.xml";
+            SiteSettingsLocation = new DirectoryInfo(Environment.CurrentDirectory).FullName + settingsFileName;
+        }
+
+        public string SiteSettingsLocation { get; set; }
 
         [HttpGet]
         public IActionResult Index()
@@ -31,7 +38,7 @@ namespace ScriptIndexerCore.Controllers
         public IActionResult SiteSettings()
         {
             XmlDocument doc = new XmlDocument();
-            doc.Load("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
+            doc.Load(SiteSettingsLocation);
             HomeModel model = new HomeModel
             {
                 Mongodb_path = doc.DocumentElement.SelectSingleNode("/settings/mongodb_path")?.InnerText,
@@ -54,14 +61,14 @@ namespace ScriptIndexerCore.Controllers
             String Ret = "OK";
 
             XmlDocument doc = new XmlDocument();
-            doc.Load("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
+            doc.Load(SiteSettingsLocation);
             doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText = mongoPath;
             doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText = mongoPort;
             doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText = databaseName;
             doc.DocumentElement.SelectSingleNode("/settings/movie_collection_name").InnerText = movieCollectionName;
             doc.DocumentElement.SelectSingleNode("/settings/show_collection_name").InnerText = showCollectionName;
             doc.DocumentElement.SelectSingleNode("/settings/misc_collection_name").InnerText = miscCollectionName;
-            doc.Save("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
+            doc.Save(SiteSettingsLocation);
 
             return Ret;
         }
@@ -77,7 +84,7 @@ namespace ScriptIndexerCore.Controllers
             try
             {
                 XmlDocument doc = new XmlDocument();
-                doc.Load("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
+                doc.Load(SiteSettingsLocation);
 
                 MongoClient dbClient = new MongoClient("mongodb://" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText + ":" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText);
                 IMongoDatabase db = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
@@ -107,7 +114,7 @@ namespace ScriptIndexerCore.Controllers
         public string MongoLoader(string fldrName, string collName)
         {
             XmlDocument doc = new XmlDocument();
-            doc.Load("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
+            doc.Load(SiteSettingsLocation);
             MongoClient dbClient = new MongoClient("mongodb://" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText + ":" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText);
             IMongoDatabase db = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
             
@@ -173,7 +180,7 @@ namespace ScriptIndexerCore.Controllers
         public string MongoPurgeCollection(string collectionName)
         {
             XmlDocument doc = new XmlDocument();
-            doc.Load("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
+            doc.Load(SiteSettingsLocation);
             MongoClient dbClient = new MongoClient("mongodb://" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText + ":" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText);
             var db = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
 
@@ -214,7 +221,7 @@ namespace ScriptIndexerCore.Controllers
             var ret = new List<searchReturn>();
             var staging = new List<searchFileByContents>();
             XmlDocument doc = new XmlDocument();
-            doc.Load("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
+            doc.Load(SiteSettingsLocation);
             MongoClient dbClient = new MongoClient("mongodb://" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText + ":" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText);
             var db = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
             var filter = Builders<searchFileByContents>.Filter.Text(searchText);
@@ -350,7 +357,7 @@ namespace ScriptIndexerCore.Controllers
             ret.ShowCount = 0;
 
             XmlDocument doc = new XmlDocument();
-            doc.Load("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
+            doc.Load(SiteSettingsLocation);
             MongoClient dbClient = new MongoClient("mongodb://" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText + ":" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText);
             var db = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
             var filter = Builders<searchFileByContents>.Filter.Empty;
