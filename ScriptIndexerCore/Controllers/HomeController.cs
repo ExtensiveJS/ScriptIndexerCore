@@ -118,8 +118,9 @@ namespace ScriptIndexerCore.Controllers
                     foreach (string file in Directory.GetFiles(fldrName))
                     {
                         string contents = System.IO.File.ReadAllText(file);
+                        string strippedFileName = file.Substring(file.LastIndexOf("\\") + 1);
                         BsonDocument movieDoc = new BsonDocument();
-                        BsonElement scriptTitle = new BsonElement("FileName", file);
+                        BsonElement scriptTitle = new BsonElement("FileName", strippedFileName);
                         movieDoc.Add(scriptTitle);
                         BsonElement scriptContents = new BsonElement("Contents", contents);
                         movieDoc.Add(scriptContents);
@@ -133,8 +134,9 @@ namespace ScriptIndexerCore.Controllers
                     foreach (string file in Directory.GetFiles(fldrName))
                     {
                         string contents = System.IO.File.ReadAllText(file);
+                        string strippedFileName = file.Substring(file.LastIndexOf("\\") + 1);
                         BsonDocument showDoc = new BsonDocument();
-                        BsonElement scriptTitle = new BsonElement("FileName", file);
+                        BsonElement scriptTitle = new BsonElement("FileName", strippedFileName);
                         showDoc.Add(scriptTitle);
                         BsonElement scriptContents = new BsonElement("Contents", contents);
                         showDoc.Add(scriptContents);
@@ -148,8 +150,9 @@ namespace ScriptIndexerCore.Controllers
                     foreach (string file in Directory.GetFiles(fldrName))
                     {
                         string contents = System.IO.File.ReadAllText(file);
+                        string strippedFileName = file.Substring(file.LastIndexOf("\\") + 1);
                         BsonDocument miscDoc = new BsonDocument();
-                        BsonElement scriptTitle = new BsonElement("FileName", file);
+                        BsonElement scriptTitle = new BsonElement("FileName", strippedFileName);
                         miscDoc.Add(scriptTitle);
                         BsonElement scriptContents = new BsonElement("Contents", contents);
                         miscDoc.Add(scriptContents);
@@ -198,9 +201,18 @@ namespace ScriptIndexerCore.Controllers
             public string Contents { get; set; }
             public string Category { get; set; }
         }
-        public List<searchFileByContents> Search(string searchText, bool searchMovies, bool searchShows, bool searchMisc)
+        public class searchReturn
         {
-            var ret = new List<searchFileByContents>();
+            public ObjectId Id { get; set; }
+            public string FileName { get; set; }
+            public string Category { get; set; }
+        }
+
+        public List<searchReturn> Search(string searchText, bool searchMovies, bool searchShows, bool searchMisc)
+        {
+            Debug.WriteLine("Start: " + DateTime.Now);
+            var ret = new List<searchReturn>();
+            var staging = new List<searchFileByContents>();
             XmlDocument doc = new XmlDocument();
             doc.Load("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
             MongoClient dbClient = new MongoClient("mongodb://" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText + ":" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText);
@@ -210,20 +222,26 @@ namespace ScriptIndexerCore.Controllers
             {
                 var movieCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/movie_collection_name").InnerText);
                 var movieResults = movieCollection.Find(filter).ToList();
-                ret.AddRange(movieResults);
+                staging.AddRange(movieResults);
             }
             if (searchShows)
             {
                 var showCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/show_collection_name").InnerText);
                 var showResults = showCollection.Find(filter).ToList();
-                ret.AddRange(showResults);
+                staging.AddRange(showResults);
             }
             if (searchMisc)
             {
                 var miscCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/misc_collection_name").InnerText);
                 var miscResults = miscCollection.Find(filter).ToList();
-                ret.AddRange(miscResults);
+                staging.AddRange(miscResults);
             }
+            Debug.WriteLine("End Get: " + DateTime.Now);
+            foreach(searchFileByContents rec in staging)
+            {
+                ret.Add(new searchReturn() { Id = rec.Id, Category = rec.Category, FileName = rec.FileName });
+            }
+            Debug.WriteLine("End Transform: " + DateTime.Now);
             return ret;
         }
 

@@ -12,7 +12,7 @@
         </div>
         <div style="padding-top:10px;">
             <h4>Search Categories:</h4>
-            <label class="checkbox-inline"><input type="checkbox" id="chkCatMovie" value="">Movies</label>
+            <label class="checkbox-inline"><input type="checkbox" id="chkCatMovie" value="" checked>Movies</label>
             <label class="checkbox-inline"><input type="checkbox" id="chkCatTV" value="">TV Shows</label>
             <label class="checkbox-inline"><input type="checkbox" id="chkCatOther" value="">Other</label>
         </div>
@@ -38,8 +38,15 @@
 <script>
     $(function () {
         $('#tblResults').dataTable();
+        $('#txtSearchText').on("keypress", function (e) {
+            if (e.keyCode == 13) {
+                runSearch();
+                return false; // prevent the button click from happening
+            }
+        });
     });
     function runSearch() {
+        $("#spanWaiting").show();
         var myTable = $('#tblResults').DataTable();
         myTable.clear();
         $.ajax({
@@ -52,14 +59,17 @@
                 searchMisc: $('#chkCatOther').is(":checked")
             },
             success: function (data) {
+                $("#spanWaiting").hide();
                 for (i = 0; i <= data.length - 1; i++) {
                     myTable.row.add([data[i].fileName, data[i].category]);
                 }
                 myTable.draw();
             },
             fail: function (xhr, textStatus, errorThrown) {
+                $("#spanWaiting").hide();
                 alert('request failed');
             }
         });
     };
+    
 </script>
