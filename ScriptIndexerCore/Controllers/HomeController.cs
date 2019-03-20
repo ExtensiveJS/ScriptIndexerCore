@@ -432,7 +432,7 @@ namespace ScriptIndexerCore.Controllers
         {
             searchFileByContents ret = new searchFileByContents();
             XmlDocument doc = new XmlDocument();
-            doc.Load("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
+            doc.Load(SiteSettingsLocation);
             MongoClient dbClient = new MongoClient("mongodb://" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText + ":" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText);
             var database = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
             var filter_id = Builders<searchFileByContents>.Filter.Eq("Id", ObjectId.Parse(id));
