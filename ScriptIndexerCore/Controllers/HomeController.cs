@@ -321,6 +321,8 @@ namespace ScriptIndexerCore.Controllers
             public long ShowCount { get; set; }
             public long MiscCount { get; set; }
             public string MovieIndexes { get; set; }
+            public string ShowIndexes { get; set; }
+            public string MiscIndexes { get; set; }
         }
         public mongoStats MongoGetStats()
         {
@@ -356,12 +358,48 @@ namespace ScriptIndexerCore.Controllers
                 }
             }
 
-
             var showCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/show_collection_name").InnerText);
             ret.ShowCount = showCollection.Count(filter);
+            var showIndexList = showCollection.Indexes.List();
+            while (showIndexList.MoveNext())
+            {
+                var currentIndex = showIndexList.Current;
+                foreach (var bdoc in currentIndex)
+                {
+                    var docNames = bdoc.Names;
+                    foreach (string name in docNames)
+                    {
+                        if (name == "name")
+                        {
+                            var value = bdoc.GetValue(name);
+                            ret.ShowIndexes = ret.ShowIndexes + string.Concat(name, ": ", value) + "<br />";
+                        }
+
+                    }
+                }
+            }
 
             var miscCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/misc_collection_name").InnerText);
             ret.MiscCount = miscCollection.Count(filter);
+            var miscIndexList = showCollection.Indexes.List();
+            while (miscIndexList.MoveNext())
+            {
+                var currentIndex = miscIndexList.Current;
+                foreach (var bdoc in currentIndex)
+                {
+                    var docNames = bdoc.Names;
+                    foreach (string name in docNames)
+                    {
+                        if (name == "name")
+                        {
+                            var value = bdoc.GetValue(name);
+                            ret.MiscIndexes = ret.MiscIndexes + string.Concat(name, ": ", value) + "<br />";
+                        }
+
+                    }
+                }
+            }
+
             return ret;
         }
 
