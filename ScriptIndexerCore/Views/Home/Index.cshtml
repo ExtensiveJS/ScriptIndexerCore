@@ -33,10 +33,23 @@
         </table>
     </div>
 </div>
-
+<div id="dialogDetails" title="Title Here" style="border-radius:3px;padding:10px;border:1px solid lightgrey;">
+    <div>
+        <textarea id="txtDetailContents" style="width:100%;"></textarea>
+    </div>
+</div>
 
 <script>
     $(function () {
+        var wHeight = $(window).height();
+        var dHeight = wHeight * 0.8;
+        $("#dialogDetails").dialog({
+            autoOpen: false,
+            height: dHeight,
+            width: 'auto',
+            overlay: { opacity: 0.5, background: "black" },
+            modal: true
+        })
         $('#tblResults').dataTable();
         $('#txtSearchText').on("keypress", function (e) {
             if (e.keyCode == 13) {
@@ -61,7 +74,7 @@
             success: function (data) {
                 $("#spanWaiting").hide();
                 for (i = 0; i <= data.length - 1; i++) {
-                    myTable.row.add([data[i].fileName, data[i].category]);
+                    myTable.row.add(["<i onclick='showDetails(\"" + data[i].id + "\", \"" + data[i].category + "\");'>" + data[i].fileName + "</i>", data[i].category]);
                 }
                 myTable.draw();
             },
@@ -71,5 +84,31 @@
             }
         });
     };
-    
+    function showDetails(id,cat) {
+        $("#spanWaiting").show();
+        
+
+        $.ajax({
+            url: '/Home/GetDetails/',
+            type: 'GET',
+            data: {
+                id: id,
+                collectionName: cat
+            },
+            success: function (data) {
+                $("#spanWaiting").hide();
+                $("#txtDetailContents").val(data.contents);
+                $("#dialogDetails").dialog({ title: data.fileName });
+                $("#dialogDetails").dialog('open');
+                $("#txtDetailContents").height($("#dialogDetails").height() * .95);
+                $("#txtDetailContents").scrollTop(0);
+            },
+            fail: function (xhr, textStatus, errorThrown) {
+                $("#spanWaiting").hide();
+                alert('request failed');
+            }
+        });
+
+        
+    }
 </script>

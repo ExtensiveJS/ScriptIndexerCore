@@ -210,7 +210,7 @@ namespace ScriptIndexerCore.Controllers
 
         public List<searchReturn> Search(string searchText, bool searchMovies, bool searchShows, bool searchMisc)
         {
-            Debug.WriteLine("Start: " + DateTime.Now);
+            //Debug.WriteLine("Start: " + DateTime.Now);
             var ret = new List<searchReturn>();
             var staging = new List<searchFileByContents>();
             XmlDocument doc = new XmlDocument();
@@ -236,12 +236,12 @@ namespace ScriptIndexerCore.Controllers
                 var miscResults = miscCollection.Find(filter).ToList();
                 staging.AddRange(miscResults);
             }
-            Debug.WriteLine("End Get: " + DateTime.Now);
+            //Debug.WriteLine("End Get: " + DateTime.Now);
             foreach(searchFileByContents rec in staging)
             {
                 ret.Add(new searchReturn() { Id = rec.Id, Category = rec.Category, FileName = rec.FileName });
             }
-            Debug.WriteLine("End Transform: " + DateTime.Now);
+            //Debug.WriteLine("End Transform: " + DateTime.Now);
             return ret;
         }
 
@@ -399,7 +399,7 @@ namespace ScriptIndexerCore.Controllers
 
             var miscCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/misc_collection_name").InnerText);
             ret.MiscCount = miscCollection.Count(filter);
-            var miscIndexList = showCollection.Indexes.List();
+            var miscIndexList = miscCollection.Indexes.List();
             while (miscIndexList.MoveNext())
             {
                 var currentIndex = miscIndexList.Current;
@@ -421,5 +421,31 @@ namespace ScriptIndexerCore.Controllers
             return ret;
         }
 
+        public searchFileByContents GetDetails(string id, string collectionName)
+        {
+            searchFileByContents ret = new searchFileByContents();
+            XmlDocument doc = new XmlDocument();
+            doc.Load("d:\\sandbox\\ScriptIndexerCore\\ScriptIndexerCore\\Data\\SiteSettings.xml");
+            MongoClient dbClient = new MongoClient("mongodb://" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText + ":" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText);
+            var database = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
+            var filter_id = Builders<searchFileByContents>.Filter.Eq("Id", ObjectId.Parse(id));
+            switch (collectionName)
+            {
+                case "Movie":
+                    var movieCollection = database.GetCollection<searchFileByContents>("ScriptIndexerMovieCollection");
+                    ret = movieCollection.Find(filter_id).FirstOrDefault();
+                    break;
+                case "Show":
+                    var showCollection = database.GetCollection<searchFileByContents>("ScriptIndexerShowCollection");
+                    ret = showCollection.Find(filter_id).FirstOrDefault();
+                    break;
+                case "Other":
+                    var otherCollection = database.GetCollection<searchFileByContents>("ScriptIndexerMiscCollection");
+                    ret = otherCollection.Find(filter_id).FirstOrDefault();
+                    break;
+            }
+
+            return ret;
+        }
     }
 }
