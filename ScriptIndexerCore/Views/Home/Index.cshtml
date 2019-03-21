@@ -11,6 +11,12 @@
             <input type="text" id="txtSearchText" class="form-control" style="width:400px;" />
         </div>
         <div style="padding-top:10px;">
+            <h4>Search Type:</h4>
+            <label class="radio-inline"><input type="radio" name="grpSearchType" id="rdoTypeAny" value="Any" checked>Any Word</label>
+            <label class="radio-inline"><input type="radio" name="grpSearchType" id="rdoTypeAll" value="All">All Works</label>
+            <label class="radio-inline"><input type="radio" name="grpSearchType" id="rdoTypeExact" value="Exact">Exact Match</label>
+        </div>
+        <div style="padding-top:10px;">
             <h4>Search Categories:</h4>
             <label class="checkbox-inline"><input type="checkbox" id="chkCatMovie" value="" checked>Movies</label>
             <label class="checkbox-inline"><input type="checkbox" id="chkCatTV" value="">TV Shows</label>
@@ -69,7 +75,8 @@
                 searchText: $("#txtSearchText").val(),
                 searchMovies: $('#chkCatMovie').is(":checked"),
                 searchShows: $('#chkCatTV').is(":checked"),
-                searchMisc: $('#chkCatOther').is(":checked")
+                searchMisc: $('#chkCatOther').is(":checked"),
+                searchType: $('input[name=grpSearchType]:checked').val()
             },
             success: function (data) {
                 $("#spanWaiting").hide();

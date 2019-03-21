@@ -7,9 +7,11 @@ using System.Xml;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using ScriptIndexerCore.Models;
 using System.IO;
 using System.Threading;
+using System.Linq.Expressions;
 
 namespace ScriptIndexerCore.Controllers
 {
@@ -215,7 +217,8 @@ namespace ScriptIndexerCore.Controllers
             public string Category { get; set; }
         }
 
-        public List<searchReturn> Search(string searchText, bool searchMovies, bool searchShows, bool searchMisc)
+        
+        public List<searchReturn> Search(string searchText, bool searchMovies, bool searchShows, bool searchMisc, string searchType)
         {
             //Debug.WriteLine("Start: " + DateTime.Now);
             var ret = new List<searchReturn>();
@@ -224,12 +227,63 @@ namespace ScriptIndexerCore.Controllers
             doc.Load(SiteSettingsLocation);
             MongoClient dbClient = new MongoClient("mongodb://" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText + ":" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText);
             var db = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
+            // set the default Filter to be TEXT (and therefore Any Word)
             var filter = Builders<searchFileByContents>.Filter.Text(searchText);
+            
+            
+
             if (searchMovies)
             {
                 var movieCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/movie_collection_name").InnerText);
-                var movieResults = movieCollection.Find(filter).ToList();
-                staging.AddRange(movieResults);
+                switch (searchType)
+                {
+                    case "All":
+                        string[] searchTextString = searchText.Split(" ");
+                        //var movieAllResults =
+                        //    from e in movieCollection.AsQueryable<searchFileByContents>()
+                        //    where e.FileName.Contains(searchText) && e.FileName.Contains("Banzai")
+                        //    select e;
+                        //var movieAllResults =
+                        //    from e in movieCollection.AsQueryable<searchFileByContents>()
+                        //    let w = e.Contents.Split(new char[] { '.', '?', '!', ' ', ';', ':', ',' },
+                        //                            StringSplitOptions.RemoveEmptyEntries)
+                        //    where w.Distinct().Intersect(searchTextString).Count() == searchTextString.Count()
+                        //    select e;
+                        //var movieAllResults =
+                        //    from e in movieCollection.AsQueryable<searchFileByContents>()
+                        //    let w = e.Contents.Split(new char[] { '.', '?', '!', ' ', ';', ':', ',' },
+                        //                            StringSplitOptions.RemoveEmptyEntries)
+                        //    where w.Distinct().Intersect(searchTextString).Count() == searchTextString.Count()
+                        //    select e;
+                        var movieAllResults =
+                            from e in movieCollection.AsQueryable<searchFileByContents>()
+                            select e;
+                        //for (int i = 0; i < searchTextString.Length; i++)
+                        //{
+                        foreach(string str in searchTextString)
+                        {
+
+                            movieAllResults =
+                                from e in movieAllResults
+                                where e.FileName.Contains(str)
+                                select e;
+                        }
+                            staging.AddRange(movieAllResults);
+                        break;
+                    case "Any":
+                        var movieAnyResults = movieCollection.Find(filter).ToList();
+                        staging.AddRange(movieAnyResults);
+                        break;
+                    case "Exact":
+                        var movieExactResults =
+                            from e in movieCollection.AsQueryable<searchFileByContents>()
+                            where e.Contents.Contains(searchText)
+                            select e;
+                        staging.AddRange(movieExactResults);
+                        break;
+                }
+                //var movieResults = movieCollection.Find(filter).ToList();
+                //staging.AddRange(movieResults);
             }
             if (searchShows)
             {
