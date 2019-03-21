@@ -239,36 +239,17 @@ namespace ScriptIndexerCore.Controllers
                 {
                     case "All":
                         string[] searchTextString = searchText.Split(" ");
-                        //var movieAllResults =
-                        //    from e in movieCollection.AsQueryable<searchFileByContents>()
-                        //    where e.FileName.Contains(searchText) && e.FileName.Contains("Banzai")
-                        //    select e;
-                        //var movieAllResults =
-                        //    from e in movieCollection.AsQueryable<searchFileByContents>()
-                        //    let w = e.Contents.Split(new char[] { '.', '?', '!', ' ', ';', ':', ',' },
-                        //                            StringSplitOptions.RemoveEmptyEntries)
-                        //    where w.Distinct().Intersect(searchTextString).Count() == searchTextString.Count()
-                        //    select e;
-                        //var movieAllResults =
-                        //    from e in movieCollection.AsQueryable<searchFileByContents>()
-                        //    let w = e.Contents.Split(new char[] { '.', '?', '!', ' ', ';', ':', ',' },
-                        //                            StringSplitOptions.RemoveEmptyEntries)
-                        //    where w.Distinct().Intersect(searchTextString).Count() == searchTextString.Count()
-                        //    select e;
                         var movieAllResults =
                             from e in movieCollection.AsQueryable<searchFileByContents>()
                             select e;
-                        //for (int i = 0; i < searchTextString.Length; i++)
-                        //{
                         foreach(string str in searchTextString)
                         {
-
                             movieAllResults =
                                 from e in movieAllResults
-                                where e.FileName.Contains(str)
+                                where e.Contents.Contains(str)
                                 select e;
                         }
-                            staging.AddRange(movieAllResults);
+                        staging.AddRange(movieAllResults);
                         break;
                     case "Any":
                         var movieAnyResults = movieCollection.Find(filter).ToList();
@@ -288,14 +269,70 @@ namespace ScriptIndexerCore.Controllers
             if (searchShows)
             {
                 var showCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/show_collection_name").InnerText);
-                var showResults = showCollection.Find(filter).ToList();
-                staging.AddRange(showResults);
+                //var showResults = showCollection.Find(filter).ToList();
+                //staging.AddRange(showResults);
+                switch (searchType)
+                {
+                    case "All":
+                        string[] searchTextString = searchText.Split(" ");
+                        var showAllResults =
+                            from e in showCollection.AsQueryable<searchFileByContents>()
+                            select e;
+                        foreach (string str in searchTextString)
+                        {
+                            showAllResults =
+                                from e in showAllResults
+                                where e.Contents.Contains(str)
+                                select e;
+                        }
+                        staging.AddRange(showAllResults);
+                        break;
+                    case "Any":
+                        var showAnyResults = showCollection.Find(filter).ToList();
+                        staging.AddRange(showAnyResults);
+                        break;
+                    case "Exact":
+                        var showExactResults =
+                            from e in showCollection.AsQueryable<searchFileByContents>()
+                            where e.Contents.Contains(searchText)
+                            select e;
+                        staging.AddRange(showExactResults);
+                        break;
+                }
             }
             if (searchMisc)
             {
                 var miscCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/misc_collection_name").InnerText);
-                var miscResults = miscCollection.Find(filter).ToList();
-                staging.AddRange(miscResults);
+                //var miscResults = miscCollection.Find(filter).ToList();
+                //staging.AddRange(miscResults);
+                switch (searchType)
+                {
+                    case "All":
+                        string[] searchTextString = searchText.Split(" ");
+                        var miscAllResults =
+                            from e in miscCollection.AsQueryable<searchFileByContents>()
+                            select e;
+                        foreach (string str in searchTextString)
+                        {
+                            miscAllResults =
+                                from e in miscAllResults
+                                where e.Contents.Contains(str)
+                                select e;
+                        }
+                        staging.AddRange(miscAllResults);
+                        break;
+                    case "Any":
+                        var miscAnyResults = miscCollection.Find(filter).ToList();
+                        staging.AddRange(miscAnyResults);
+                        break;
+                    case "Exact":
+                        var miscExactResults =
+                            from e in miscCollection.AsQueryable<searchFileByContents>()
+                            where e.Contents.Contains(searchText)
+                            select e;
+                        staging.AddRange(miscExactResults);
+                        break;
+                }
             }
             //Debug.WriteLine("End Get: " + DateTime.Now);
             foreach(searchFileByContents rec in staging)
