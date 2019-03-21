@@ -109,6 +109,10 @@
             }
         });
 
-        
+        //highlight selected text
+        var searchtext = $("#txtSearchText").val();
+        $("#txtDetailContents").highlightTextarea({
+            words: [searchtext]
+        });
     }
 </script>
