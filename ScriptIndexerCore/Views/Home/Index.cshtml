@@ -46,7 +46,7 @@
 </div>
 
 <script>
-    $(function () {
+   $(function () {
         var wHeight = $(window).height();
         var dHeight = wHeight * 0.8;
         $("#dialogDetails").dialog({
@@ -81,7 +81,7 @@
             success: function (data) {
                 $("#spanWaiting").hide();
                 for (i = 0; i <= data.length - 1; i++) {
-                    myTable.row.add(["<i onclick='showDetails(\"" + data[i].id + "\", \"" + data[i].category + "\");'>" + data[i].fileName + "</i>", data[i].category]);
+                    myTable.row.add(["<em onclick='showDetails(\"" + data[i].id + "\", \"" + data[i].category + "\");'>" + data[i].fileName + "</em>", data[i].category]);
                 }
                 myTable.draw();
             },
@@ -93,7 +93,6 @@
     };
     function showDetails(id,cat) {
         $("#spanWaiting").show();
-        
 
         $.ajax({
             url: '/Home/GetDetails/',
@@ -114,12 +113,6 @@
                 $("#spanWaiting").hide();
                 alert('request failed');
             }
-        });
-
-        //highlight selected text
-        var searchtext = $("#txtSearchText").val();
-        $("#txtDetailContents").highlightTextarea({
-            words: [searchtext]
         });
     }
 </script>
