@@ -458,10 +458,9 @@ namespace ScriptIndexerCore.Controllers
             doc.Load(SiteSettingsLocation);
             MongoClient dbClient = new MongoClient("mongodb://" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText + ":" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText);
             var db = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
-            var filter = Builders<searchFileByContents>.Filter.Empty;
-
+            
             var movieCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/movie_collection_name").InnerText);
-            ret.MovieCount = movieCollection.Count(filter);
+            ret.MovieCount = movieCollection.EstimatedDocumentCount();
             var movieIndexList = movieCollection.Indexes.List();
             while (movieIndexList.MoveNext())
             {
@@ -482,7 +481,7 @@ namespace ScriptIndexerCore.Controllers
             }
 
             var showCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/show_collection_name").InnerText);
-            ret.ShowCount = showCollection.Count(filter);
+            ret.ShowCount = showCollection.EstimatedDocumentCount();
             var showIndexList = showCollection.Indexes.List();
             while (showIndexList.MoveNext())
             {
@@ -503,7 +502,7 @@ namespace ScriptIndexerCore.Controllers
             }
 
             var miscCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/misc_collection_name").InnerText);
-            ret.MiscCount = miscCollection.Count(filter);
+            ret.MiscCount = miscCollection.EstimatedDocumentCount();
             var miscIndexList = miscCollection.Indexes.List();
             while (miscIndexList.MoveNext())
             {
