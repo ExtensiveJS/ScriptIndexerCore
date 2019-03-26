@@ -8,27 +8,41 @@
     <div style="padding-bottom:5px;"><h3>Mongo Settings</h3></div>
     <div style="height:35px;">
         <div style="width:175px;float:left;text-align:right;padding-right:5px;margin-top:7px;">MongoDB Path:</div>
-        <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtMongoPath" value="@Model.Mongodb_path" /></div>
+        <div style="width:520px;float:left;">
+            <div style="float:left;width:450px;"><input type="text" class="form-control" id="txtMongoPath" value="@Model.Mongodb_path" /></div>
+        </div>
     </div>
     <div style="height:35px;">
         <div style="width:175px;float:left;text-align:right;padding-right:5px;margin-top:7px;">MongoDB Port:</div>
-        <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtMongoPort" style="width:75px;" value="@Model.Mongodb_port" /></div>
+        <div style="width:520px;float:left;"><input type="text" class="form-control" id="txtMongoPort" style="width:75px;" value="@Model.Mongodb_port" /></div>
     </div>
     <div style="height:35px;">
         <div style="width:175px;float:left;text-align:right;padding-right:5px;margin-top:7px;">Database Name:</div>
-        <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtDatabaseName" value="@Model.Database_name" /></div>
+        <div style="width:520px;float:left;">
+            <div style="float:left;width:430px;"><input type="text" class="form-control" id="txtDatabaseName" value="@Model.Database_name" /></div>
+            <div style="float:left;padding-left:10px;"><button type="button" class="btn btn-primary btn-sm" onclick="createDB();">CreateDB</button></div>
+        </div>
     </div>
     <div style="height:35px;">
         <div style="width:175px;float:left;text-align:right;padding-right:5px;margin-top:7px;">Movie Collection Name:</div>
-        <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtMovieCollectionName" value="@Model.Movie_collection_name" /></div>
+        <div style="width:520px;float:left;">
+            <div style="float:left;width:430px;"><input type="text" class="form-control" id="txtMovieCollectionName" value="@Model.Movie_collection_name" /></div>
+            <div style="float:left;padding-left:10px;"><button type="button" class="btn btn-primary btn-sm" onclick="createColl('Movie');">Create</button></div>
+        </div>
     </div>
     <div style="height:35px;">
         <div style="width:175px;float:left;text-align:right;padding-right:5px;margin-top:7px;">Show Collection Name:</div>
-        <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtShowCollectionName" value="@Model.Show_collection_name" /></div>
+        <div style="width:520px;float:left;">
+            <div style="float:left;width:430px;"><input type="text" class="form-control" id="txtShowCollectionName" value="@Model.Show_collection_name" /></div>
+            <div style="float:left;padding-left:10px;"><button type="button" class="btn btn-primary btn-sm" onclick="createColl('Show');">Create</button></div>
+        </div>
     </div>
     <div style="height:35px;">
         <div style="width:175px;float:left;text-align:right;padding-right:5px;margin-top:7px;">Misc Collection Name:</div>
-        <div style="width:400px;float:left;"><input type="text" class="form-control" id="txtMiscCollectionName" value="@Model.Misc_collection_name" /></div>
+        <div style="width:520px;float:left;">
+            <div style="float:left;width:430px;"><input type="text" class="form-control" id="txtMiscCollectionName" value="@Model.Misc_collection_name" /></div>
+            <div style="float:left;padding-left:10px;"><button type="button" class="btn btn-primary btn-sm" onclick="createColl('Misc');">Create</button></div>
+        </div>
     </div>
     <div style="height:35px;">
         <div style="float:right;">
@@ -353,6 +367,41 @@
                 $("#lblMovieIndexes").html(data.movieIndexes);
                 $("#lblShowIndexes").html(data.showIndexes);
                 $("#lblMiscIndexes").html(data.miscIndexes);
+            },
+            fail: function (xhr, textStatus, errorThrown) {
+                $("#spanWaiting").hide();
+                alert('request failed');
+            }
+        });
+    }
+    function createDB() {
+        $.ajax({
+            url: '/Home/CreateDb/',
+            type: 'GET',
+            data: {
+                dbName: $("#txtDatabaseName").val()
+            },
+            success: function (data) {
+                alert('success');
+                runSave();
+                $("#spanWaiting").hide();
+            },
+            fail: function (xhr, textStatus, errorThrown) {
+                $("#spanWaiting").hide();
+                alert('request failed');
+            }
+        });
+    }
+    function createColl(c) {
+        $.ajax({
+            url: '/Home/CreateColl/',
+            type: 'GET',
+            data: {
+                collectionName: $("#txt" + c + "CollectionName").val()
+            },
+            success: function (data) {
+                alert('success');
+                $("#spanWaiting").hide();
             },
             fail: function (xhr, textStatus, errorThrown) {
                 $("#spanWaiting").hide();

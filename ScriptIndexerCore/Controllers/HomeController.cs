@@ -365,13 +365,17 @@ namespace ScriptIndexerCore.Controllers
         }
         static async Task DeleteIndex(string collectionName)
         {
-            var client = new MongoClient();
-            var database = client.GetDatabase("ScriptIndexer");
+            string settingsFileName = @"\Data\SiteSettings.xml";
+            XmlDocument doc = new XmlDocument();
+            doc.Load(new DirectoryInfo(Environment.CurrentDirectory).FullName + settingsFileName);
+            MongoClient dbClient = new MongoClient("mongodb://" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText + ":" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText);
+            var database = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
+
 
             switch (collectionName)
             {
                 case "Movies":
-                    var movieCollection = database.GetCollection<searchFileByContents>("ScriptIndexerMovieCollection");
+                    var movieCollection = database.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/movie_collection_name").InnerText);
                     try
                     {
                         await movieCollection.Indexes.DropOneAsync("Contents_text");
@@ -381,7 +385,7 @@ namespace ScriptIndexerCore.Controllers
                     }
                     break;
                 case "Shows":
-                    var showCollection = database.GetCollection<searchFileByContents>("ScriptIndexerShowCollection");
+                    var showCollection = database.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/show_collection_name").InnerText);
                     try
                     {
                         await showCollection.Indexes.DropOneAsync("Contents_text");
@@ -392,7 +396,7 @@ namespace ScriptIndexerCore.Controllers
                     }
                     break;
                 case "Misc":
-                    var otherCollection = database.GetCollection<searchFileByContents>("ScriptIndexerMiscCollection");
+                    var otherCollection = database.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/misc_collection_name").InnerText);
                     try
                     {
                         await otherCollection.Indexes.DropOneAsync("Contents_text");
@@ -406,25 +410,28 @@ namespace ScriptIndexerCore.Controllers
         }
         static async Task CreateIndex(string collectionName)
         {
+            string settingsFileName = @"\Data\SiteSettings.xml";
+            XmlDocument doc = new XmlDocument();
+            doc.Load(new DirectoryInfo(Environment.CurrentDirectory).FullName + settingsFileName);
+            MongoClient dbClient = new MongoClient("mongodb://" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText + ":" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText);
+            var database = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
 
-            var client = new MongoClient();
-            var database = client.GetDatabase("ScriptIndexer");
-                       
+
             var notificationLogBuilder = Builders<searchFileByContents>.IndexKeys;
             var indexModel = new CreateIndexModel<searchFileByContents>(notificationLogBuilder.Text(x => x.Contents));
 
             switch (collectionName)
             {
                 case "Movies":
-                    var movieCollection = database.GetCollection<searchFileByContents>("ScriptIndexerMovieCollection");
+                    var movieCollection = database.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/movie_collection_name").InnerText);
                     await movieCollection.Indexes.CreateOneAsync(indexModel).ConfigureAwait(false);
                     break;
                 case "Shows":
-                    var showCollection = database.GetCollection<searchFileByContents>("ScriptIndexerShowCollection");
+                    var showCollection = database.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/show_collection_name").InnerText);
                     await showCollection.Indexes.CreateOneAsync(indexModel).ConfigureAwait(false);
                     break;
                 case "Misc":
-                    var otherCollection = database.GetCollection<searchFileByContents>("ScriptIndexerMiscCollection");
+                    var otherCollection = database.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/misc_collection_name").InnerText);
                     await otherCollection.Indexes.CreateOneAsync(indexModel).ConfigureAwait(false);
                     break;
             }
@@ -544,6 +551,24 @@ namespace ScriptIndexerCore.Controllers
             }
 
             return ret;
+        }
+
+        public string CreateDb(string dbName)
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.Load(SiteSettingsLocation);
+            MongoClient dbClient = new MongoClient("mongodb://" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText + ":" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText);
+            var db = dbClient.GetDatabase(dbName);
+            return "OK";
+        }
+        public string CreateColl(string collectionName)
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.Load(SiteSettingsLocation);
+            MongoClient dbClient = new MongoClient("mongodb://" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_path").InnerText + ":" + doc.DocumentElement.SelectSingleNode("/settings/mongodb_port").InnerText);
+            var db = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
+            db.CreateCollection(collectionName);
+            return "OK";
         }
     }
 }
