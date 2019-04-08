@@ -12,6 +12,7 @@ using ScriptIndexerCore.Models;
 using System.IO;
 using System.Threading;
 using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 
 namespace ScriptIndexerCore.Controllers
 {
@@ -127,12 +128,15 @@ namespace ScriptIndexerCore.Controllers
                     foreach (string file in Directory.GetFiles(fldrName))
                     {
                         string contents = System.IO.File.ReadAllText(file);
+                        string strippedContent = Regex.Replace(contents, @"\t|\n|\r|[^\w]", "");
                         string strippedFileName = file.Substring(file.LastIndexOf("\\") + 1);
                         BsonDocument movieDoc = new BsonDocument();
                         BsonElement scriptTitle = new BsonElement("FileName", strippedFileName);
                         movieDoc.Add(scriptTitle);
                         BsonElement scriptContents = new BsonElement("Contents", contents);
                         movieDoc.Add(scriptContents);
+                        BsonElement scriptStrippedContents = new BsonElement("StrippedContents", strippedContent);
+                        movieDoc.Add(scriptStrippedContents);
                         BsonElement scriptType = new BsonElement("Category", "Movie");
                         movieDoc.Add(scriptType);
                         movieCollection.InsertOne(movieDoc);
@@ -143,12 +147,15 @@ namespace ScriptIndexerCore.Controllers
                     foreach (string file in Directory.GetFiles(fldrName))
                     {
                         string contents = System.IO.File.ReadAllText(file);
+                        string strippedContent = Regex.Replace(contents, @"\t|\n|\r|[^\w]", "");
                         string strippedFileName = file.Substring(file.LastIndexOf("\\") + 1);
                         BsonDocument showDoc = new BsonDocument();
                         BsonElement scriptTitle = new BsonElement("FileName", strippedFileName);
                         showDoc.Add(scriptTitle);
                         BsonElement scriptContents = new BsonElement("Contents", contents);
                         showDoc.Add(scriptContents);
+                        BsonElement scriptStrippedContents = new BsonElement("StrippedContents", strippedContent);
+                        showDoc.Add(scriptStrippedContents);
                         BsonElement scriptType = new BsonElement("Category", "Show");
                         showDoc.Add(scriptType);
                         showCollection.InsertOne(showDoc);
@@ -159,12 +166,15 @@ namespace ScriptIndexerCore.Controllers
                     foreach (string file in Directory.GetFiles(fldrName))
                     {
                         string contents = System.IO.File.ReadAllText(file);
+                        string strippedContent = Regex.Replace(contents, @"\t|\n|\r|[^\w]", "");
                         string strippedFileName = file.Substring(file.LastIndexOf("\\") + 1);
                         BsonDocument miscDoc = new BsonDocument();
                         BsonElement scriptTitle = new BsonElement("FileName", strippedFileName);
                         miscDoc.Add(scriptTitle);
                         BsonElement scriptContents = new BsonElement("Contents", contents);
                         miscDoc.Add(scriptContents);
+                        BsonElement scriptStrippedContents = new BsonElement("StrippedContents", strippedContent);
+                        miscDoc.Add(scriptStrippedContents);
                         BsonElement scriptType = new BsonElement("Category", "Other");
                         miscDoc.Add(scriptType);
                         miscCollection.InsertOne(miscDoc);
@@ -209,6 +219,8 @@ namespace ScriptIndexerCore.Controllers
             public string FileName { get; set; }
             public string Contents { get; set; }
             public string Category { get; set; }
+            public string StrippedContents { get; set; }
+
         }
         public class searchReturn
         {
@@ -229,8 +241,8 @@ namespace ScriptIndexerCore.Controllers
             var db = dbClient.GetDatabase(doc.DocumentElement.SelectSingleNode("/settings/database_name").InnerText);
             // set the default Filter to be TEXT (and therefore Any Word)
             var filter = Builders<searchFileByContents>.Filter.Text(searchText);
-            
-            
+
+            searchText = Regex.Replace(searchText, @"[^\w]|\s", "");
 
             if (searchMovies)
             {
@@ -256,15 +268,10 @@ namespace ScriptIndexerCore.Controllers
                         staging.AddRange(movieAnyResults);
                         break;
                     case "Exact":
-                        var movieExactResults =
-                            from e in movieCollection.AsQueryable<searchFileByContents>()
-                            where e.Contents.Contains(searchText)
-                            select e;
-                        staging.AddRange(movieExactResults);
+                        var filter1 = Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(searchText, "i"));
+                        staging.AddRange(movieCollection.Find(filter1).ToList());
                         break;
                 }
-                //var movieResults = movieCollection.Find(filter).ToList();
-                //staging.AddRange(movieResults);
             }
             if (searchShows)
             {
@@ -292,11 +299,8 @@ namespace ScriptIndexerCore.Controllers
                         staging.AddRange(showAnyResults);
                         break;
                     case "Exact":
-                        var showExactResults =
-                            from e in showCollection.AsQueryable<searchFileByContents>()
-                            where e.Contents.Contains(searchText)
-                            select e;
-                        staging.AddRange(showExactResults);
+                        var filter1 = Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(searchText, "i"));
+                        staging.AddRange(showCollection.Find(filter1).ToList());
                         break;
                 }
             }
@@ -326,23 +330,18 @@ namespace ScriptIndexerCore.Controllers
                         staging.AddRange(miscAnyResults);
                         break;
                     case "Exact":
-                        var miscExactResults =
-                            from e in miscCollection.AsQueryable<searchFileByContents>()
-                            where e.Contents.Contains(searchText)
-                            select e;
-                        staging.AddRange(miscExactResults);
+                        var filter1 = Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(searchText, "i"));
+                        staging.AddRange(miscCollection.Find(filter1).ToList());
                         break;
                 }
             }
-            //Debug.WriteLine("End Get: " + DateTime.Now);
             foreach(searchFileByContents rec in staging)
             {
                 ret.Add(new searchReturn() { Id = rec.Id, Category = rec.Category, FileName = rec.FileName });
             }
-            //Debug.WriteLine("End Transform: " + DateTime.Now);
             return ret;
         }
-
+        
         public List<String> GetFolders(string startDir)
         {
             List<String> Ret = new List<string>();
