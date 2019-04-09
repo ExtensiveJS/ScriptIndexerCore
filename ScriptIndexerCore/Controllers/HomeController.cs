@@ -294,19 +294,29 @@ namespace ScriptIndexerCore.Controllers
                     case "All":
                         searchText = Regex.Replace(searchText, @"[^\w\s]", "");
                         string[] searchTextString = searchText.Split(" ");
-                        var filter0 = Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(searchTextString[0], "i"));
+                        var showAllResults =
+                            from e in showCollection.AsQueryable<searchFileByContents>()
+                            select e;
                         foreach (string str in searchTextString)
                         {
-                            if (str != searchTextString[0])
-                            {
-                                filter0 = filter0 & (Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(str, "i")));
-                            }
+                            showAllResults =
+                                from e in showAllResults
+                                where e.Contents.Contains(str)
+                                select e;
                         }
-                        staging.AddRange(showCollection.Find(filter0).ToList());
+                        staging.AddRange(showAllResults);
                         break;
                     case "Any":
-                        searchText = Regex.Replace(searchText, @"[^\w]|\s", "");
-                        var filter1 = Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(searchText, "i"));
+                        searchText = Regex.Replace(searchText, @"[^\w\s]", "");
+                        string[] searchTextString1 = searchText.Split(" ");
+                        var filter1 = Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(searchTextString1[0], "i"));
+                        foreach (string str in searchTextString1)
+                        {
+                            if (str != searchTextString1[0])
+                            {
+                                filter1 = filter1 | (Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(str, "i")));
+                            }
+                        }
                         staging.AddRange(showCollection.Find(filter1).ToList());
                         break;
                     case "Exact":
@@ -324,19 +334,29 @@ namespace ScriptIndexerCore.Controllers
                     case "All":
                         searchText = Regex.Replace(searchText, @"[^\w\s]", "");
                         string[] searchTextString = searchText.Split(" ");
-                        var filter0 = Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(searchTextString[0], "i"));
+                        var miscAllResults =
+                            from e in miscCollection.AsQueryable<searchFileByContents>()
+                            select e;
                         foreach (string str in searchTextString)
                         {
-                            if (str != searchTextString[0])
-                            {
-                                filter0 = filter0 & (Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(str, "i")));
-                            }
+                            miscAllResults =
+                                from e in miscAllResults
+                                where e.Contents.Contains(str)
+                                select e;
                         }
-                        staging.AddRange(miscCollection.Find(filter0).ToList());
+                        staging.AddRange(miscAllResults);
                         break;
                     case "Any":
-                        searchText = Regex.Replace(searchText, @"[^\w]|\s", "");
-                        var filter1 = Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(searchText, "i"));
+                        searchText = Regex.Replace(searchText, @"[^\w\s]", "");
+                        string[] searchTextString1 = searchText.Split(" ");
+                        var filter1 = Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(searchTextString1[0], "i"));
+                        foreach (string str in searchTextString1)
+                        {
+                            if (str != searchTextString1[0])
+                            {
+                                filter1 = filter1 | (Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(str, "i")));
+                            }
+                        }
                         staging.AddRange(miscCollection.Find(filter1).ToList());
                         break;
                     case "Exact":
