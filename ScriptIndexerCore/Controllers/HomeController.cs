@@ -12,6 +12,7 @@ using ScriptIndexerCore.Models;
 using System.IO;
 using System.Threading;
 using System.Linq.Expressions;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace ScriptIndexerCore.Controllers
@@ -232,6 +233,8 @@ namespace ScriptIndexerCore.Controllers
         
         public List<searchReturn> Search(string searchText, bool searchMovies, bool searchShows, bool searchMisc, string searchType, int searchQty)
         {
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            
             //Debug.WriteLine("Start: " + DateTime.Now);
             var ret = new List<searchReturn>();
             var staging = new List<searchFileByContents>();
@@ -370,6 +373,16 @@ namespace ScriptIndexerCore.Controllers
             {
                 ret.Add(new searchReturn() { Id = rec.Id, Category = rec.Category, FileName = rec.FileName });
             }
+
+            //logging the search time for each query
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+            StringBuilder sb = new StringBuilder();
+            var path = "timelog.txt";
+            var now = DateTime.Now;
+            sb.Append(now.ToString() + " | " + "search took: " + elapsedMs + "ms" + " | " + "searchtext: " + searchText + " | " + "searchtype: " + searchType + Environment.NewLine);
+            System.IO.File.AppendAllText(path, sb.ToString());
+
             return ret;
         }
         
