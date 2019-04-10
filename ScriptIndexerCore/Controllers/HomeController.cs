@@ -230,7 +230,7 @@ namespace ScriptIndexerCore.Controllers
         }
 
         
-        public List<searchReturn> Search(string searchText, bool searchMovies, bool searchShows, bool searchMisc, string searchType)
+        public List<searchReturn> Search(string searchText, bool searchMovies, bool searchShows, bool searchMisc, string searchType, int searchQty)
         {
             //Debug.WriteLine("Start: " + DateTime.Now);
             var ret = new List<searchReturn>();
@@ -276,13 +276,13 @@ namespace ScriptIndexerCore.Controllers
                                 filter1 = filter1 | (Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(str, "i")));
                             }
                         }
-                        staging.AddRange(movieCollection.Find(filter1).ToList());
+                        staging.AddRange(movieCollection.Find(filter1).Limit(searchQty).ToList());
                         //staging.AddRange(movieCollection.Find(filter1).ToList());
                         break;
                     case "Exact":
                         searchText = Regex.Replace(searchText, @"[^\w]|\s", "");
                         var filter2 = Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(searchText, "i"));
-                        staging.AddRange(movieCollection.Find(filter2).ToList());
+                        staging.AddRange(movieCollection.Find(filter2).Limit(searchQty).ToList());
                         break;
                 }
             }
@@ -317,12 +317,12 @@ namespace ScriptIndexerCore.Controllers
                                 filter1 = filter1 | (Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(str, "i")));
                             }
                         }
-                        staging.AddRange(showCollection.Find(filter1).ToList());
+                        staging.AddRange(showCollection.Find(filter1).Limit(searchQty).ToList());
                         break;
                     case "Exact":
                         searchText = Regex.Replace(searchText, @"[^\w]|\s", "");
                         var filter2 = Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(searchText, "i"));
-                        staging.AddRange(showCollection.Find(filter2).ToList());
+                        staging.AddRange(showCollection.Find(filter2).Limit(searchQty).ToList());
                         break;
                 }
             }
@@ -357,12 +357,12 @@ namespace ScriptIndexerCore.Controllers
                                 filter1 = filter1 | (Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(str, "i")));
                             }
                         }
-                        staging.AddRange(miscCollection.Find(filter1).ToList());
+                        staging.AddRange(miscCollection.Find(filter1).Limit(searchQty).ToList());
                         break;
                     case "Exact":
                         searchText = Regex.Replace(searchText, @"[^\w]|\s", "");
                         var filter2 = Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(searchText, "i"));
-                        staging.AddRange(miscCollection.Find(filter2).ToList());
+                        staging.AddRange(miscCollection.Find(filter2).Limit(searchQty).ToList());
                         break;
                 }
             }

@@ -8,7 +8,11 @@
     <div>
         <div>
             <h4>Search Text:</h4>
-            <input type="text" id="txtSearchText" class="form-control" style="width:400px;" />
+            <div class="input-group">
+                <input type="text" id="txtSearchText" class="form-control form-inline" style="width:400px;" />
+                <input type="text" id="txtQty" class="form-control form-inline" style="width:50px" value="20" />
+            </div>
+            
         </div>
         <div style="padding-top:10px;">
             <h4>Search Type:</h4>
@@ -76,7 +80,8 @@
                 searchMovies: $('#chkCatMovie').is(":checked"),
                 searchShows: $('#chkCatTV').is(":checked"),
                 searchMisc: $('#chkCatOther').is(":checked"),
-                searchType: $('input[name=grpSearchType]:checked').val()
+                searchType: $('input[name=grpSearchType]:checked').val(),
+                searchQty: $('#txtQty').val()
             },
             success: function (data) {
                 $("#spanWaiting").hide();
