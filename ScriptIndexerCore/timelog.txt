@@ -6,3 +6,4 @@
 4/9/2019 10:48:23 PM | search took: 316ms | searchtext: brent | searchtype: Any
 4/9/2019 10:48:31 PM | search took: 37ms | searchtext: brent is great | searchtype: Any
 4/9/2019 10:48:43 PM | search took: 30ms | searchtext: adam is wonderful | searchtype: Any
+4/9/2019 10:54:05 PM | search took: 27916ms | searchtext: inigomontoya | searchtype: Exact
