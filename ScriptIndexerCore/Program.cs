@@ -20,9 +20,14 @@ namespace ScriptIndexerCore
                 .AddEnvironmentVariables(prefix: "ASPNETCORE_")
                 .Build();
 
+            var hostUrl = config["hosturl"];
+            if (string.IsNullOrEmpty(hostUrl))
+                hostUrl = "http://0.0.0.0:5000";
+
             var host = new WebHostBuilder()
                 .UseConfiguration(config)
                 .UseKestrel()
+                .UseUrls(hostUrl)
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
