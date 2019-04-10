@@ -235,7 +235,6 @@ namespace ScriptIndexerCore.Controllers
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
             
-            //Debug.WriteLine("Start: " + DateTime.Now);
             var ret = new List<searchReturn>();
             var staging = new List<searchFileByContents>();
             XmlDocument doc = new XmlDocument();
@@ -245,8 +244,6 @@ namespace ScriptIndexerCore.Controllers
             // set the default Filter to be TEXT (and therefore Any Word)
             var filter = Builders<searchFileByContents>.Filter.Text(searchText);
 
-            //searchText = Regex.Replace(searchText, @"[^\w]|\s", "");
-
             if (searchMovies)
             {
                 var movieCollection = db.GetCollection<searchFileByContents>(doc.DocumentElement.SelectSingleNode("/settings/movie_collection_name").InnerText);
@@ -255,32 +252,18 @@ namespace ScriptIndexerCore.Controllers
                     case "All":
                         searchText = Regex.Replace(searchText, @"[^\w\s]", "");
                         string[] searchTextString = searchText.Split(" ");
-                        var movieAllResults =
-                            from e in movieCollection.AsQueryable<searchFileByContents>()
-                            select e;
-                        foreach (string str in searchTextString)
+                        string searchTextQuoted = string.Empty;
+                        foreach(string str in searchTextString)
                         {
-                            movieAllResults =
-                                from e in movieAllResults
-                                where e.Contents.Contains(str)
-                                select e;
+                            searchTextQuoted = searchTextQuoted + "\"" + str + "\" ";
                         }
-                        staging.AddRange(movieAllResults);
+                        var filter0 = Builders<searchFileByContents>.Filter.Text(searchTextQuoted);
+                        staging.AddRange(movieCollection.Find(filter0).Limit(searchQty).ToList());
                         break;
                     case "Any":
-                        //var filter1 = Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(searchText, "i"));
                         searchText = Regex.Replace(searchText, @"[^\w\s]", "");
-                        string[] searchTextString1 = searchText.Split(" ");
-                        var filter1 = Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(searchTextString1[0], "i"));
-                        foreach (string str in searchTextString1)
-                        {
-                            if (str != searchTextString1[0])
-                            {
-                                filter1 = filter1 | (Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(str, "i")));
-                            }
-                        }
+                        var filter1 = Builders<searchFileByContents>.Filter.Text(searchText);
                         staging.AddRange(movieCollection.Find(filter1).Limit(searchQty).ToList());
-                        //staging.AddRange(movieCollection.Find(filter1).ToList());
                         break;
                     case "Exact":
                         searchText = Regex.Replace(searchText, @"[^\w]|\s", "");
@@ -297,29 +280,17 @@ namespace ScriptIndexerCore.Controllers
                     case "All":
                         searchText = Regex.Replace(searchText, @"[^\w\s]", "");
                         string[] searchTextString = searchText.Split(" ");
-                        var showAllResults =
-                            from e in showCollection.AsQueryable<searchFileByContents>()
-                            select e;
+                        string searchTextQuoted = string.Empty;
                         foreach (string str in searchTextString)
                         {
-                            showAllResults =
-                                from e in showAllResults
-                                where e.Contents.Contains(str)
-                                select e;
+                            searchTextQuoted = searchTextQuoted + "\"" + str + "\" ";
                         }
-                        staging.AddRange(showAllResults);
+                        var filter0 = Builders<searchFileByContents>.Filter.Text(searchTextQuoted);
+                        staging.AddRange(showCollection.Find(filter0).Limit(searchQty).ToList());
                         break;
                     case "Any":
                         searchText = Regex.Replace(searchText, @"[^\w\s]", "");
-                        string[] searchTextString1 = searchText.Split(" ");
-                        var filter1 = Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(searchTextString1[0], "i"));
-                        foreach (string str in searchTextString1)
-                        {
-                            if (str != searchTextString1[0])
-                            {
-                                filter1 = filter1 | (Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(str, "i")));
-                            }
-                        }
+                        var filter1 = Builders<searchFileByContents>.Filter.Text(searchText);
                         staging.AddRange(showCollection.Find(filter1).Limit(searchQty).ToList());
                         break;
                     case "Exact":
@@ -337,29 +308,17 @@ namespace ScriptIndexerCore.Controllers
                     case "All":
                         searchText = Regex.Replace(searchText, @"[^\w\s]", "");
                         string[] searchTextString = searchText.Split(" ");
-                        var miscAllResults =
-                            from e in miscCollection.AsQueryable<searchFileByContents>()
-                            select e;
+                        string searchTextQuoted = string.Empty;
                         foreach (string str in searchTextString)
                         {
-                            miscAllResults =
-                                from e in miscAllResults
-                                where e.Contents.Contains(str)
-                                select e;
+                            searchTextQuoted = searchTextQuoted + "\"" + str + "\" ";
                         }
-                        staging.AddRange(miscAllResults);
+                        var filter0 = Builders<searchFileByContents>.Filter.Text(searchTextQuoted);
+                        staging.AddRange(miscCollection.Find(filter0).Limit(searchQty).ToList());
                         break;
                     case "Any":
                         searchText = Regex.Replace(searchText, @"[^\w\s]", "");
-                        string[] searchTextString1 = searchText.Split(" ");
-                        var filter1 = Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(searchTextString1[0], "i"));
-                        foreach (string str in searchTextString1)
-                        {
-                            if (str != searchTextString1[0])
-                            {
-                                filter1 = filter1 | (Builders<searchFileByContents>.Filter.Regex("StrippedContents", new BsonRegularExpression(str, "i")));
-                            }
-                        }
+                        var filter1 = Builders<searchFileByContents>.Filter.Text(searchText);
                         staging.AddRange(miscCollection.Find(filter1).Limit(searchQty).ToList());
                         break;
                     case "Exact":
@@ -461,7 +420,7 @@ namespace ScriptIndexerCore.Controllers
 
 
             var notificationLogBuilder = Builders<searchFileByContents>.IndexKeys;
-            var indexModel = new CreateIndexModel<searchFileByContents>(notificationLogBuilder.Text(x => x.StrippedContents));
+            var indexModel = new CreateIndexModel<searchFileByContents>(notificationLogBuilder.Text(x => x.Contents));
 
             switch (collectionName)
             {
